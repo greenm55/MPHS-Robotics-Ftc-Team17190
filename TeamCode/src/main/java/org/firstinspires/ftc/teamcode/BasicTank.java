@@ -33,13 +33,15 @@ public class BasicTank extends LinearOpMode {
             leftXY = new float[]{-gamepad1.left_stick_y /* Note: Pushing up is -1*/, gamepad1.left_stick_x};
             rightXY = new float[]{-gamepad1.right_stick_y /* Note: Pushing up is -1*/, gamepad1.right_stick_x};
 
-            finalWheelPower[0/* Front right */] = rightXY[0] - rightXY[1];
-            finalWheelPower[2/* Back right */] = rightXY[0] + rightXY[1];
+            wheelPower[0/* Front right */] = rightXY[0] - rightXY[1];
+            wheelPower[2/* Back right */] = rightXY[0] + rightXY[1];
 
-            finalWheelPower[1/* Front left */] = leftXY[0] + leftXY[1];
-            finalWheelPower[3/* Back left */] = leftXY[0] - leftXY[1];
+            wheelPower[1/* Front left */] = leftXY[0] + leftXY[1];
+            wheelPower[3/* Back left */] = leftXY[0] - leftXY[1];
 
-            max = Math.max(Math.abs(Math.max(Math.abs(finalWheelPower[0]), Math.abs(finalWheelPower[1]))), Math.max(Math.abs(finalWheelPower[2]), Math.abs(finalWheelPower[3])));
+            max = Math.max(Math.abs(wheelPower[0]), Math.abs(wheelPower[1]));
+            max = Math.max(Math.abs(max),Math.abs(wheelPower[2]));
+            max = Math.max(Math.abs(max),Math.abs(wheelPower[3]));
 
             if (max > 0) {
                 finalWheelPower = new float[]{(wheelPower[0] / max), (wheelPower[1] / max), (wheelPower[2] / max), (wheelPower[3] / max)};

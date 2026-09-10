@@ -23,8 +23,8 @@ public class BasicMecanumWOdom extends LinearOpMode {
     //Target Points
     public static final double[][] targetPoints = {
             {100, 100, Math.PI, 50, 5}, // X, Y, Heading, XY Tolerance, Heading Tolerance
-            {-100, 100, Math.PI/2, 10, 1},
-            {0,0,0,1,1} // Min tolerance 1
+            {-100, 100, Math.PI / 2, 10, 1},
+            {0, 0, 0, 1, 1} // Min tolerance 1
     };
     //Target Points
     //=======================
@@ -37,7 +37,7 @@ public class BasicMecanumWOdom extends LinearOpMode {
     public static double fieldX = 0;
     public static double fieldY = 0;
 
-    public static double[] robotPosition = {0,0,0}; // (X,Y,T)
+    public static double[] robotPosition = {0, 0, 0}; // (X,Y,T)
 
     @Override
     public void runOpMode() {
@@ -119,9 +119,8 @@ public class BasicMecanumWOdom extends LinearOpMode {
 
             if (maxPower != 0) {
                 finalWheelPower = new double[]{(wheelPower[0] / maxPower), (wheelPower[1] / maxPower), (wheelPower[2] / maxPower), (wheelPower[3] / maxPower)};
-            }
-            else{
-                finalWheelPower = new double[]{0,0,0,0};
+            } else {
+                finalWheelPower = new double[]{0, 0, 0, 0};
             }
 
             frontRightDrive.setPower(finalWheelPower[0]);
@@ -129,14 +128,14 @@ public class BasicMecanumWOdom extends LinearOpMode {
             backRightDrive.setPower(finalWheelPower[2]);
             backLeftDrive.setPower(finalWheelPower[3]);
 
-            telemetry.addData("X:",robotPosition[0]);
-            telemetry.addData("Y:",robotPosition[1]);
-            telemetry.addData("Theta:",robotPosition[2]);
+            telemetry.addData("X:", robotPosition[0]);
+            telemetry.addData("Y:", robotPosition[1]);
+            telemetry.addData("Theta:", robotPosition[2]);
             telemetry.update();
         }
     }
 
-    public static double[] targeter(int targetNum){
+    public static double[] targeter(int targetNum) {
 
         double errorX = targetPoints[targetNum][0] - robotPosition[0];
         double errorY = targetPoints[targetNum][1] - robotPosition[1];
@@ -158,11 +157,9 @@ public class BasicMecanumWOdom extends LinearOpMode {
 
         if (precentRemaining <= 0.25) {
             powerScale = 3 * precentRemaining + 0.25;
-        }
-        else if (precentRemaining <= 0.75) {
+        } else if (precentRemaining <= 0.75) {
             powerScale = 1;
-        }
-        else {
+        } else {
             powerScale = -3 * precentRemaining + 3.25;
         }
 
@@ -184,7 +181,8 @@ public class BasicMecanumWOdom extends LinearOpMode {
 
         return angle;
     }
-    static boolean atPoint(int targetNum){
+
+    static boolean atPoint(int targetNum) {
 
         double errorX = targetPoints[targetNum][0] - robotPosition[0];
         double errorY = targetPoints[targetNum][1] - robotPosition[1];
@@ -195,7 +193,7 @@ public class BasicMecanumWOdom extends LinearOpMode {
         return XYError <= targetPoints[targetNum][3] && Math.abs(errorT) <= targetPoints[targetNum][4];
     }
 
-    public static void evalPos(double frontRightEncoder, double frontLeftEncoder, double backRightEncoder ){
+    public static void evalPos(double frontRightEncoder, double frontLeftEncoder, double backRightEncoder) {
 
         double distPerTick = (Math.PI * wheelDiameter) / tickPerRev;
         double deltaLeft, deltaRight, deltaPerpendicular;
