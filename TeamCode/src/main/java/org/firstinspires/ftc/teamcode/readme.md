@@ -354,10 +354,10 @@ The names in the Robot Controller configuration must exactly match the names use
 
 ## OpMode Summary
 
-| OpMode | Type | Drive System | Main Purpose |
-|---|---|---|---|
-| `BasicMecanum` | TeleOp | Mecanum | Manual omnidirectional driving |
-| `BasicTank` | TeleOp | Tank | Manual differential-style driving |
+| OpMode              | Type       | Drive System       | Main Purpose                        |
+|---------------------|------------|--------------------|-------------------------------------|
+| `BasicMecanum`      | TeleOp     | Mecanum            | Manual omnidirectional driving      |
+| `BasicTank`         | TeleOp     | Tank               | Manual differential-style driving   |
 | `BasicMecanumWOdom` | Autonomous | Mecanum + Odometry | Automatic point-to-point navigation |
 
 ## Development Notes
