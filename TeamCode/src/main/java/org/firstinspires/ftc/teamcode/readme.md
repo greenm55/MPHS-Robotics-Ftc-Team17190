@@ -18,7 +18,6 @@ All three programs use the same four drive motors:
 The left-side motors are configured as `REVERSE`, while the right-side motors are configured as `FORWARD`.
 
 # Driver controlled programs
-
 ## BasicMecanum
 
 `BasicMecanum` is a TeleOp OpMode designed to manually control a four-wheel mecanum-drive robot.
@@ -99,12 +98,6 @@ Front Left  = Left Stick Y + Left Stick X
 Back Left   = Left Stick Y - Left Stick X
 ```
 
-### Important Note
-
-The current version of `BasicTank` contains a normalization issue.
-
-The program calculates wheel powers into `finalWheelPower`, but the normalization section divides values from the separate `wheelPower` array:
-
 ```text
 finalWheelPower = new double[]{
     (wheelPower[0] / max),
@@ -113,10 +106,6 @@ finalWheelPower = new double[]{
     (wheelPower[3] / max)
 };
 ```
-
-`wheelPower` is not updated with the newly calculated values inside the main loop.
-
-Because of this, the current program should be considered an in-development tank-drive implementation.
 
 # Autonomous Programs
 
@@ -205,7 +194,7 @@ represents:
 ```text
 X Position        = 100
 Y Position        = 100
-Heading           = π radians
+Heading           = π radians (180° relative to initial heading)
 XY Tolerance      = 50
 Heading Tolerance = 5
 ```
