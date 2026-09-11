@@ -32,6 +32,8 @@ public class AdvancedMecanum extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            Odometry.evalPos(frontRightDrive.getCurrentPosition(), frontLeftDrive.getCurrentPosition(), backRightDrive.getCurrentPosition());
+            heading = Odometry.getHeading();
             // Note: Pushing up is -1
             leftXY = new float[]{-gamepad1.left_stick_y, gamepad1.left_stick_x};
             rightXY = new float[]{-gamepad1.right_stick_y, gamepad1.right_stick_x};

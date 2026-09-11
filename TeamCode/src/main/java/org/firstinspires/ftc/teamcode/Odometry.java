@@ -82,6 +82,6 @@ public class Odometry {
     }
 
     public static double getHeading(){
-        return robotPosition[0];
+        return robotPosition[2];
     }
 }
