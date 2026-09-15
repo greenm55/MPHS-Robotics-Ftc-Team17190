@@ -19,10 +19,6 @@ public class BasicMecanumWOdom extends LinearOpMode {
     //Target Points
     //=======================
 
-    public static double prevLeft = 0;
-    public static double prevRight = 0;
-    public static double prevPerpendicular = 0;
-
     public static double[] robotPosition = {0, 0, 0}; // (X,Y,T)
 
     @Override

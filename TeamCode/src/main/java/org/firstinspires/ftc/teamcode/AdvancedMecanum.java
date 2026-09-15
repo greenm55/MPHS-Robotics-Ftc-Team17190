@@ -20,7 +20,7 @@ public class AdvancedMecanum extends LinearOpMode {
         float[] finalWheelPower;
         float max;
 
-        double heading = Odometry.getHeading();
+        double heading;
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
