@@ -49,6 +49,7 @@ public class RobotDrive {
     }
 
     public double[] getRobotPosition() {
+        update();
         return robotPosition;
     }
 
@@ -78,6 +79,8 @@ public class RobotDrive {
     }
 
     public boolean atPoint(double[] targetPoint) {
+
+        update();
 
         double errorX = targetPoint[0] - robotPosition[0];
         double errorY = targetPoint[1] - robotPosition[1];

@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Helpers.Odometry;
 import org.firstinspires.ftc.teamcode.Helpers.RobotDrive;
 import org.firstinspires.ftc.teamcode.Helpers.Turret;
 
@@ -40,6 +39,7 @@ public class MainAutoState extends LinearOpMode {
     public void runOpMode() {
         RobotDrive robotDrive = new RobotDrive(hardwareMap);
         Turret turret = new Turret(hardwareMap);
+
         //==================================================
         // Initialization
         //==================================================
@@ -101,10 +101,10 @@ public class MainAutoState extends LinearOpMode {
                     robotDrive.stop();
 
                     // Tell turret to auto-aim
-                    Turret.autoAim(robotDrive.getRobotPosition());
+                    turret.autoAim(robotDrive.getRobotPosition());
 
                     // Tell turret to shoot
-                    if (Turret.shoot()) {
+                    if (turret.shoot()) {
                         targetNum++;
 
                         if (targetNum >= targetPoints.length) {

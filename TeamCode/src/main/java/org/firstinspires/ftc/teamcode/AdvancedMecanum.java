@@ -17,6 +17,8 @@ public class AdvancedMecanum extends LinearOpMode {
         DcMotor backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
         DcMotor backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
 
+        Turret turret = new Turret(hardwareMap);
+
         float[] wheelPower = {0,0,0,0}; // 0:FR, 1:FL, 2:BR, 3:BL
         float[] leftXY;
         float[] rightXY;
@@ -64,13 +66,15 @@ public class AdvancedMecanum extends LinearOpMode {
             backRightDrive.setPower(finalWheelPower[2]);
             backLeftDrive.setPower(finalWheelPower[3]);
 
-            position = new double[]{Odometry.getX(),Odometry.getY(),Odometry.getHeading()};
+            position = Odometry.getRobotPosition();
 
-            Turret.autoAim(position);
+            turret.autoAim(position);
 
             if(gamepad1.right_trigger_pressed){
-                if(Turret.shoot()){
-                    break;
+                while(!turret.shoot()){
+                    Odometry.evalPos(frontRightDrive.getCurrentPosition(), frontLeftDrive.getCurrentPosition(), backRightDrive.getCurrentPosition());
+                    position = Odometry.getRobotPosition();
+                    turret.autoAim(position);
                 }
             }
 

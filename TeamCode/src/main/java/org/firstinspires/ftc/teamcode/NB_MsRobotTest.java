@@ -5,32 +5,23 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name= "NB_MSroboTest", group="LinearOpMode" )
-public class NB_MSroboTest extends LinearOpMode {
-    private DcMotor FL;
-    private DcMotor FR;
-    private DcMotor BL;
-    private DcMotor BR;
-    private CRServo sr1;
-    private CRServo sr2;
-    private CRServo sr3;
-    private CRServo sr4;
+@TeleOp(name= "NB_MsRobotTest", group="LinearOpMode" )
+public class NB_MsRobotTest extends LinearOpMode {
 
 
     @Override
     public void runOpMode() {
 
         //matching to names in configuration
-        FL = hardwareMap.get(DcMotor.class, "front.left");
-        FR = hardwareMap.get(DcMotor.class, "front.right");
-        BL = hardwareMap.get(DcMotor.class, "back.left");
-        BR = hardwareMap.get(DcMotor.class, "back.right");
-        sr1 = hardwareMap.get(CRServo.class, "servo1");
-        sr2 = hardwareMap.get(CRServo.class, "servo2");
-        sr3 = hardwareMap.get(CRServo.class, "servo3");
-        sr4 = hardwareMap.get(CRServo.class, "servo4");
+        DcMotor FL = hardwareMap.get(DcMotor.class, "front.left");
+        DcMotor FR = hardwareMap.get(DcMotor.class, "front.right");
+        DcMotor BL = hardwareMap.get(DcMotor.class, "back.left");
+        DcMotor BR = hardwareMap.get(DcMotor.class, "back.right");
+        CRServo sr1 = hardwareMap.get(CRServo.class, "servo1");
+        CRServo sr2 = hardwareMap.get(CRServo.class, "servo2");
+        CRServo sr3 = hardwareMap.get(CRServo.class, "servo3");
+        CRServo sr4 = hardwareMap.get(CRServo.class, "servo4");
 
 
         //Direction settings

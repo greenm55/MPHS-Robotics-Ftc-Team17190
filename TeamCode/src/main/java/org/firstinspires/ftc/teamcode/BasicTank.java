@@ -17,7 +17,7 @@ public class BasicTank extends LinearOpMode {
         float[] wheelPower = {0,0,0,0}; // 0:FR, 1:FL, 2:BR, 3:BL
         float[] leftXY;
         float[] rightXY;
-        float[] finalWheelPower = {0,0,0,0};
+        float[] finalWheelPower;
         float max;
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
