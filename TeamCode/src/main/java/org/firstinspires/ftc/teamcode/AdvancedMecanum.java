@@ -4,6 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.Helpers.Odometry;
+import org.firstinspires.ftc.teamcode.Helpers.Turret;
+
 @TeleOp(name = "Basic Mecanum TeleOp", group = "Linear OpMode")
 public class AdvancedMecanum extends LinearOpMode {
 
@@ -21,6 +24,7 @@ public class AdvancedMecanum extends LinearOpMode {
         float max;
 
         double heading;
+        double[] position;
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -59,6 +63,16 @@ public class AdvancedMecanum extends LinearOpMode {
             frontLeftDrive.setPower(finalWheelPower[1]);
             backRightDrive.setPower(finalWheelPower[2]);
             backLeftDrive.setPower(finalWheelPower[3]);
+
+            position = new double[]{Odometry.getX(),Odometry.getY(),Odometry.getHeading()};
+
+            Turret.autoAim(position);
+
+            if(gamepad1.right_trigger_pressed){
+                if(Turret.shoot()){
+                    break;
+                }
+            }
 
             telemetry.update();
         }

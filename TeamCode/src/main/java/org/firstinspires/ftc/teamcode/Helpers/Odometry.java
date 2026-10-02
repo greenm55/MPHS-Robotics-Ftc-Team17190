@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Helpers;
 
 public class Odometry {
 
@@ -22,6 +22,8 @@ public class Odometry {
     public static double fieldY = 0;
 
     public static double[] robotPosition = {0,0,0};
+
+    // Front right and Left are Right and right encoder, and back right it the perpendicular
 
     public static double[] evalPos(double frontRightEncoder, double frontLeftEncoder, double backRightEncoder) {
 
