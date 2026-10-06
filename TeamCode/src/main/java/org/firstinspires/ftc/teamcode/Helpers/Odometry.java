@@ -5,10 +5,10 @@ public class Odometry {
     //=======================
     //ODOMETRY CONSTANTS
 
-    public static double wheelDiameter = 48.0; // mm
-    public static double tickPerRev = 537.7;
-    public static final double trackWidth = 350.0;   // mm
-    public static final double PerpendicularOffset = 120.0;   // mm
+    public static double wheelDiameter = 32.0; // mm
+    public static double tickPerRev = 2000;
+    public static final double trackWidth = 158.0;   // mm
+    public static final double PerpendicularOffset = 110.0;   // mm
 
     //ODOMETRY CONSTANTS
     //=======================
