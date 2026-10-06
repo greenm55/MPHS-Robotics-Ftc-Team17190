@@ -31,7 +31,7 @@ public class BasicMecanum extends LinearOpMode {
 
         while (opModeIsActive()) {
             // Note: Pushing up is -1
-            leftXY = new float[]{-gamepad1.left_stick_y, gamepad1.left_stick_x};
+            leftXY = new float[]{gamepad1.left_stick_x, -gamepad1.left_stick_y};
             rightXY = new float[]{-gamepad1.right_stick_y, gamepad1.right_stick_x};
 
             wheelPower[0] = leftXY[0] - leftXY[1] - rightXY[1]; // Left y - Left x - Right x
