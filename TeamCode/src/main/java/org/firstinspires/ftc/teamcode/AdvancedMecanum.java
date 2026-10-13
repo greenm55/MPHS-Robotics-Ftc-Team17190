@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Helpers.Odometry;
 import org.firstinspires.ftc.teamcode.Helpers.Turret;
@@ -33,6 +34,15 @@ public class AdvancedMecanum extends LinearOpMode {
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
+        if (frontLeftDrive.getDirection() == DcMotorSimple.Direction.REVERSE){
+            Odometry.leftDirection = true;
+        }
+        if (frontRightDrive.getDirection() == DcMotorSimple.Direction.REVERSE){
+            Odometry.rightDirection = true;
+        }
+
+        Odometry.reset();
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
@@ -61,10 +71,10 @@ public class AdvancedMecanum extends LinearOpMode {
                 finalWheelPower = new float[]{0,0,0,0};
             }
 
-            frontRightDrive.setPower(finalWheelPower[0]);
-            frontLeftDrive.setPower(finalWheelPower[1]);
-            backRightDrive.setPower(finalWheelPower[2]);
-            backLeftDrive.setPower(finalWheelPower[3]);
+            frontRightDrive.setPower(wheelPower[0]);
+            frontLeftDrive.setPower(wheelPower[1]);
+            backRightDrive.setPower(wheelPower[2]);
+            backLeftDrive.setPower(wheelPower[3]);
 
             position = Odometry.getRobotPosition();
 
@@ -77,6 +87,16 @@ public class AdvancedMecanum extends LinearOpMode {
                     turret.autoAim(position);
                 }
             }
+            telemetry.addLine("--- Odometry output ---");
+            telemetry.addData("X (mm)", "%.1f", position[0]);
+            telemetry.addData("Y (mm)", "%.1f", position[1]);
+            telemetry.addData("Heading (deg)", "%.2f", Math.toDegrees(position[2]));
+
+            telemetry.addLine("--- Controller input ---");
+            telemetry.addData("Left stick Y", leftXY[0]);
+            telemetry.addData("Left stick X", leftXY[1]);
+            telemetry.addData("Right stick Y", rightXY[0]);
+            telemetry.addData("Right stick Y", rightXY[1]);
 
             telemetry.update();
         }

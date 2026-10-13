@@ -9,10 +9,10 @@ public class Turret {
 
     public Turret(HardwareMap hardwareMap) {
 
-        DcMotor turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
-        turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        DcMotor turretMotor = hardwareMap.get(DcMotor.class, "turretMotor");
+//        turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         // Initialize turret and shooter hardware here
     }
 

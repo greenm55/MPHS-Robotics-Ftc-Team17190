@@ -23,6 +23,8 @@ public class Odometry {
 
     public static double[] robotPosition = {0,0,0};
 
+    public static boolean leftDirection, rightDirection; //True is REVERSED
+
     // Front right and Left are Right and right encoder, and back right it the perpendicular
 
     public static double[] evalPos(double frontRightEncoder, double frontLeftEncoder, double backRightEncoder) {
@@ -33,6 +35,12 @@ public class Odometry {
         double curLeft, curRight, curPerpendicular;
         double fieldDeltaX, fieldDeltaY;
         double averageT;
+
+        if (leftDirection){
+            frontLeftEncoder *= -1;
+        } else if (rightDirection) {
+            frontRightEncoder *= -1;
+        }
 
 
         // Step 1 — Read encoders

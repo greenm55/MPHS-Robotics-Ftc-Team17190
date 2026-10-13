@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name = "Basic Mecanum TeleOp", group = "Linear OpMode")
+@TeleOp(name = "Basic Mecanum TeleOp")
 public class BasicMecanum extends LinearOpMode {
 
     @Override
@@ -31,13 +31,13 @@ public class BasicMecanum extends LinearOpMode {
 
         while (opModeIsActive()) {
             // Note: Pushing up is -1
-            leftXY = new double[]{gamepad1.left_stick_x, gamepad1.left_stick_y};
+            leftXY = new double[]{-1 * (gamepad1.left_stick_y), gamepad1.left_stick_x};
             rightXY = new double[]{gamepad1.right_stick_y, gamepad1.right_stick_x};
 
-            wheelPower[0] = leftXY[0] - leftXY[1] - rightXY[1]; // Left x - Left y - Right x
-            wheelPower[1] = leftXY[0] + leftXY[1] + rightXY[1]; // Left x + Left y + Right x
-            wheelPower[2] = leftXY[0] + leftXY[1] - rightXY[1]; // Left x + Left y - Right x
-            wheelPower[3] = leftXY[0] - leftXY[1] + rightXY[1]; // Left x - Left y + Right x
+            wheelPower[0] = leftXY[0] + leftXY[1] - rightXY[1]; // Left x + Left y - Right x
+            wheelPower[1] = leftXY[0] - leftXY[1] + rightXY[1]; // Left x - Left y + Right x
+            wheelPower[2] = leftXY[0] - leftXY[1] - rightXY[1]; // Left x - Left y - Right x
+            wheelPower[3] = leftXY[0] + leftXY[1] + rightXY[1]; // Left x + Left y + Right x
 
             max = Math.max(Math.max(Math.abs(wheelPower[0]), Math.abs(wheelPower[1])), Math.max(Math.abs(wheelPower[2]), Math.abs(wheelPower[3])));
 
@@ -52,6 +52,12 @@ public class BasicMecanum extends LinearOpMode {
             frontLeftDrive.setPower(wheelPower[1]);
             backRightDrive.setPower(wheelPower[2]);
             backLeftDrive.setPower(wheelPower[3]);
+
+            telemetry.addLine("Controller inputs");
+            telemetry.addData("LeftY:", leftXY[0]);
+            telemetry.addData("LeftX:", leftXY[1]);
+            telemetry.addData("RightY:", rightXY[1]);
+            telemetry.addData("RightX:", rightXY[0]);
 
             telemetry.update();
         }
