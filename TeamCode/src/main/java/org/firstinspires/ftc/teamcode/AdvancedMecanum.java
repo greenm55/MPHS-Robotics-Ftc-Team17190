@@ -29,10 +29,26 @@ public class AdvancedMecanum extends LinearOpMode {
         double heading;
         double[] position;
 
+        int fr = frontRightDrive.getCurrentPosition();   // right pod
+        int fl = frontLeftDrive.getCurrentPosition();    // left pod
+        int br = backRightDrive.getCurrentPosition();    // perpendicular pod
+
+        double distPerTick = (Math.PI * Odometry.wheelDiameter) / Odometry.tickPerRev;
+
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
+
+        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        sleep(50); // let the encoder reset settle before Odometry takes its baseline
 
         if (frontLeftDrive.getDirection() == DcMotorSimple.Direction.REVERSE){
             Odometry.leftDirection = true;
@@ -87,10 +103,31 @@ public class AdvancedMecanum extends LinearOpMode {
                     turret.autoAim(position);
                 }
             }
+
+            double rightMm = fr * distPerTick;
+            double leftMm = fl * distPerTick;
+            double perpMm = br * distPerTick;
+            double checkHeading = (rightMm - leftMm) / Odometry.trackWidth;
             telemetry.addLine("--- Odometry output ---");
             telemetry.addData("X (mm)", "%.1f", position[0]);
             telemetry.addData("Y (mm)", "%.1f", position[1]);
             telemetry.addData("Heading (deg)", "%.2f", Math.toDegrees(position[2]));
+
+            telemetry.addLine("--- Raw ticks ---");
+            telemetry.addData("Fr (right pod)", frontRightDrive.getCurrentPosition());
+            telemetry.addData("Fl (left pod)", frontLeftDrive.getCurrentPosition());
+            telemetry.addData("Br (perp pod)", backRightDrive.getCurrentPosition());
+
+            telemetry.addLine("--- Distance since zero (mm) ---");
+            telemetry.addData("Right", "%.1f", rightMm);
+            telemetry.addData("Left", "%.1f", leftMm);
+            telemetry.addData("Perp", "%.1f", perpMm);
+            telemetry.addData("R - L (positive = turning CCW)", "%.1f", rightMm - leftMm);
+            telemetry.addData("(R + L) / 2 (forward)", "%.1f", (rightMm + leftMm) / 2.0);
+
+            telemetry.addLine("--- Sanity check ---");
+            telemetry.addData("Heading from raw ticks (deg)", "%.2f", Math.toDegrees(checkHeading));
+            telemetry.addData("Mismatch (deg)", "%.2f", Math.toDegrees(position[2] - checkHeading));
 
             telemetry.addLine("--- Controller input ---");
             telemetry.addData("Left stick Y", leftXY[0]);
