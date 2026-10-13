@@ -74,6 +74,11 @@ public class Odometry {
 
         return robotPosition;
     }
+    public static void reset() {
+        prevRight = prevLeft = prevPerpendicular = 0;
+        robotT = fieldX = fieldY = 0;
+        robotPosition = new double[]{0, 0, 0};
+    }
 
     public static double getX(){
         return robotPosition[0];
