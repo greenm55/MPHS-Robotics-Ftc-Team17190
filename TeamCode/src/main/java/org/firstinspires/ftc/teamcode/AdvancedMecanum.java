@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.Helpers.Odometry;
 import org.firstinspires.ftc.teamcode.Helpers.Turret;
 
-@TeleOp(name = "Basic Mecanum TeleOp", group = "Linear OpMode")
+@TeleOp(name = "Basic Mecanum TeleOp")
 public class AdvancedMecanum extends LinearOpMode {
 
     @Override
