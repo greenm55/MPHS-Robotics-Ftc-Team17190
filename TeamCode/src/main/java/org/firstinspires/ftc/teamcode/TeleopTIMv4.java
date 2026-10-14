@@ -69,8 +69,7 @@ public class TeleopTIMv4 extends LinearOpMode {
         huskyLens = hardwareMap.get(HuskyLens.class, "HuskyLens");
 
 
-        huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
-        telemetry.update();
+         telemetry.update();
 
         ElapsedTime timer = new ElapsedTime();
 
