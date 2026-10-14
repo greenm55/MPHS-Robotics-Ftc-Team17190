@@ -23,8 +23,6 @@ public class AdvancedMecanum extends LinearOpMode {
         float[] wheelPower = {0,0,0,0}; // 0:FR, 1:FL, 2:BR, 3:BL
         float[] leftXY;
         float[] rightXY;
-        float[] finalWheelPower;
-        float max;
 
         double heading;
         double[] position;
@@ -50,12 +48,6 @@ public class AdvancedMecanum extends LinearOpMode {
 
         sleep(50); // let the encoder reset settle before Odometry takes its baseline
 
-        if (frontLeftDrive.getDirection() == DcMotorSimple.Direction.REVERSE){
-            Odometry.leftDirection = true;
-        }
-        if (frontRightDrive.getDirection() == DcMotorSimple.Direction.REVERSE){
-            Odometry.rightDirection = true;
-        }
 
         Odometry.reset();
 
@@ -78,15 +70,6 @@ public class AdvancedMecanum extends LinearOpMode {
             wheelPower[2] = fieldY + fieldX - rightXY[1]; // Left y + Left x - Right x
             wheelPower[3] = fieldY - fieldX + rightXY[1]; // Left y - Left x + Right x
 
-            max = Math.max(Math.max(Math.abs(wheelPower[0]), Math.abs(wheelPower[1])), Math.max(Math.abs(wheelPower[2]), Math.abs(wheelPower[3])));
-
-            if (max != 0) {
-                finalWheelPower = new float[]{(wheelPower[0] / max), (wheelPower[1] / max), (wheelPower[2] / max), (wheelPower[3] / max)};
-            }
-            else{
-                finalWheelPower = new float[]{0,0,0,0};
-            }
-
             frontRightDrive.setPower(wheelPower[0]);
             frontLeftDrive.setPower(wheelPower[1]);
             backRightDrive.setPower(wheelPower[2]);
@@ -105,9 +88,10 @@ public class AdvancedMecanum extends LinearOpMode {
             }
 
             double rightMm = fr * distPerTick;
-            double leftMm = fl * distPerTick;
+            double leftMm = -fl * distPerTick;
             double perpMm = br * distPerTick;
-            double checkHeading = (rightMm - leftMm) / Odometry.trackWidth;
+            double checkHeading = Odometry.getHeading();
+
             telemetry.addLine("--- Odometry output ---");
             telemetry.addData("X (mm)", "%.1f", position[0]);
             telemetry.addData("Y (mm)", "%.1f", position[1]);

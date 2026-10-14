@@ -36,12 +36,8 @@ public class Odometry {
         double fieldDeltaX, fieldDeltaY;
         double averageT;
 
-        if (leftDirection){
-            frontLeftEncoder *= -1;
-        } else if (rightDirection) {
-            frontRightEncoder *= -1;
-        }
-
+        // Undo REVERSE on left side
+        frontLeftEncoder *= -1;
 
         // Step 1 — Read encoders
         curRight = frontRightEncoder;
