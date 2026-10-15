@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Helpers;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-
 public class RobotDrive {
 
     private final DcMotor frontLeftDrive;
@@ -36,6 +35,8 @@ public class RobotDrive {
         frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        Odometry.reset();
     }
 
 
@@ -104,7 +105,7 @@ public class RobotDrive {
         double targetRobotX = targetPoint[0] * Math.cos(targetPoint[2]) + targetPoint[1] * Math.sin(targetPoint[2]);
         double targetRobotY = targetPoint[0] * Math.sin(targetPoint[2]) + targetPoint[1] * Math.cos(targetPoint[2]);
 
-        double XYDist = Math.sqrt(targetRobotX * targetRobotX + targetRobotY * targetRobotY);
+        double XYDist = Math.sqrt(Math.pow(targetRobotX,2) + Math.pow(targetRobotY,2));
 
         double percentRemaining;
 

@@ -1,17 +1,24 @@
 package org.firstinspires.ftc.teamcode.Helpers;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Odometry {
 
     //=======================
     //ODOMETRY CONSTANTS
 
     public static double wheelDiameter = 32.0; // mm
-    public static double tickPerRev = 2000;
-    public static final double trackWidth = 158.0;   // mm
-    public static final double PerpendicularOffset = 110.0;   // mm
+    public static double tickPerRev = 2000.0;
+    public static double trackWidth = 158.0;   // mm
+    public static double perpendicularOffset = 110.0;   // mm
 
     //ODOMETRY CONSTANTS
     //=======================
+
+    private static DcMotor frontLeftDrive = null;
+    private static DcMotor frontRightDrive= null;
+    private static DcMotor backLeftDrive= null;
+    private static DcMotor backRightDrive= null;
 
     static double prevRight = 0;
     static double prevLeft = 0;
@@ -23,9 +30,20 @@ public class Odometry {
 
     public static double[] robotPosition = {0,0,0};
 
+    public Odometry(HardwareMap hardwareMap){
+
+        frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
+        frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
+        backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
+        backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
+
+    }
+
     // Front right and Left are Right and right encoder, and back right it the perpendicular
 
-    public static double[] evalPos(double frontRightEncoder, double frontLeftEncoder, double backRightEncoder) {
+    public static double[] evalPos(double frontRightEncoder,
+                                   double frontLeftEncoder,
+                                   double backRightEncoder) {
 
         double distPerTick = (Math.PI * wheelDiameter) / tickPerRev;
         double deltaLeft, deltaRight, deltaPerpendicular;
@@ -50,7 +68,7 @@ public class Odometry {
         //Step 3 — Calculate movement
         deltaT = (deltaRight - deltaLeft) / trackWidth;
         deltaY = (deltaRight + deltaLeft) / 2;
-        deltaX = deltaPerpendicular - PerpendicularOffset * deltaT;
+        deltaX = deltaPerpendicular - perpendicularOffset * deltaT;
 
         //Step 4 - Calculate average heading
         averageT = robotT + (deltaT / 2);
@@ -80,6 +98,17 @@ public class Odometry {
         prevRight = prevLeft = prevPerpendicular = 0;
         robotT = fieldX = fieldY = 0;
         robotPosition = new double[]{0, 0, 0};
+
+        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robotPosition = evalPos(
+                frontRightDrive.getCurrentPosition(),
+                frontLeftDrive.getCurrentPosition(),
+                backRightDrive.getCurrentPosition()
+        );
     }
 
     public static double getX(){
