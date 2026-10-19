@@ -13,14 +13,14 @@ public class TestOdo extends LinearOpMode {
     private DcMotor frontRightDrive;
     private DcMotor backRightDrive;
 
-    Odometry odometry = new Odometry(hardwareMap);
-
     @Override
     public void runOpMode() {
 
         frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
         backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
+
+        Odometry odometry = new Odometry(hardwareMap);
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -85,6 +85,9 @@ public class TestOdo extends LinearOpMode {
     }
 
     private void resetAll() {
+
+        Odometry odometry = new Odometry(hardwareMap);
+
         frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

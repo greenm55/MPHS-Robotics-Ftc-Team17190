@@ -10,14 +10,14 @@ import org.firstinspires.ftc.teamcode.Helpers.Turret;
 @TeleOp(name = "Basic Mecanum TeleOp")
 public class AdvancedMecanum extends LinearOpMode {
 
-    Odometry odometry = new Odometry(hardwareMap);
-
     @Override
     public void runOpMode() {
         DcMotor frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
         DcMotor frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
         DcMotor backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
         DcMotor backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
+
+        Odometry odometry = new Odometry(hardwareMap);
 
         Turret turret = new Turret(hardwareMap);
 
@@ -48,7 +48,6 @@ public class AdvancedMecanum extends LinearOpMode {
         backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         sleep(50); // let the encoder reset settle before Odometry takes its baseline
-
 
         odometry.reset();
 
