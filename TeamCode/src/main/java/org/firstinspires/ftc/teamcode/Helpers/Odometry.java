@@ -9,16 +9,16 @@ public class Odometry {
 
     public static double wheelDiameter = 32.0; // mm
     public static double tickPerRev = 2000.0;
-    public static double trackWidth = 158.0;   // mm
-    public static double perpendicularOffset = 110.0;   // mm
+    public static double trackWidth = 138.6;   // mm
+    public static double perpendicularOffset = 228.10;   // mm
 
     //ODOMETRY CONSTANTS
     //=======================
 
-    private static DcMotor frontLeftDrive = null;
-    private static DcMotor frontRightDrive= null;
-    private static DcMotor backLeftDrive= null;
-    private static DcMotor backRightDrive= null;
+    public final DcMotor frontLeftDrive;
+    public final DcMotor frontRightDrive;
+    public final DcMotor backLeftDrive;
+    public final DcMotor backRightDrive;
 
     static double prevRight = 0;
     static double prevLeft = 0;
@@ -94,16 +94,11 @@ public class Odometry {
 
         return robotPosition;
     }
-    public static void reset() {
+    public void reset() {
+
         prevRight = prevLeft = prevPerpendicular = 0;
         robotT = fieldX = fieldY = 0;
         robotPosition = new double[]{0, 0, 0};
-
-        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
         robotPosition = evalPos(
                 frontRightDrive.getCurrentPosition(),
                 frontLeftDrive.getCurrentPosition(),

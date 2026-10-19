@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Helpers.Odometry;
 
@@ -13,6 +12,8 @@ public class TestOdo extends LinearOpMode {
     private DcMotor frontLeftDrive;
     private DcMotor frontRightDrive;
     private DcMotor backRightDrive;
+
+    Odometry odometry = new Odometry(hardwareMap);
 
     @Override
     public void runOpMode() {
@@ -94,6 +95,6 @@ public class TestOdo extends LinearOpMode {
 
         sleep(50); // let the encoder reset settle before Odometry takes its baseline
 
-        Odometry.reset();
+        odometry.reset();
     }
 }
