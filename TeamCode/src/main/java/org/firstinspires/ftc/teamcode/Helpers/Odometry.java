@@ -34,9 +34,9 @@ public class Odometry {
         backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
     }
 
-    // Front right and Left are Right and right encoder, and back right it the perpendicular
-
     public double[] evalPos() {
+
+        // Front right and Left are Right and right encoder, and back right it the perpendicular
 
         double frontLeftEncoder = frontLeftDrive.getCurrentPosition();
         double frontRightEncoder = frontRightDrive.getCurrentPosition();
