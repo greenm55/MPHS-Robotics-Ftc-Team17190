@@ -21,9 +21,9 @@ public class MainAutoState extends LinearOpMode {
     //==================================================
 
     public static final double[][] targetPoints = {
-            {100, 100, 0, 50, 5, 0},
-            {-100, 100, 0, 50, 5, 0},
-            {0, 0, 0, 50, 5, 0}
+            {100, 100, 0, 50, Math.toRadians(5), 0},
+            {-100, 100, 0, 50, Math.toRadians(5), 0},
+            {0, 0, 0, 50, Math.toRadians(5), 0}
     };
     //==================================================
     // States

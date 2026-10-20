@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode.Helpers;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 
 public class Turret {
+
+    private Telemetry telemetry;
     public enum TargetState {
         LEFT_UP,
         RIGHT_UP,
@@ -17,8 +20,8 @@ public class Turret {
     public Turret(HardwareMap hardwareMap) {
         huskyLens = hardwareMap.get(HuskyLens.class, "HuskyLens");
         huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
-        telemetry.update();
         // Initialize turret and shooter hardware here
+        telemetry.update();
     }
     private int getOriginalTagId(int huskyId) {
         if (huskyId >= 1 && huskyId <= 8) {
