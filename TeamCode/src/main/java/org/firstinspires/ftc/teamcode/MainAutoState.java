@@ -3,6 +3,9 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.Helpers.RobotDrive;
+import org.firstinspires.ftc.teamcode.Helpers.Turret;
+
 
 @Autonomous(name = "Auto State Machine")
 public class MainAutoState extends LinearOpMode {
@@ -18,9 +21,9 @@ public class MainAutoState extends LinearOpMode {
     //==================================================
 
     public static final double[][] targetPoints = {
-            {100, 100, Math.PI, 50, 5, 0},
-            {-100, 100, Math.PI / 2, 10, 1, 1},
-            {0, 0, 0, 1, 1, 0}
+            {100, 100, 0, 50, 5, 0},
+            {-100, 100, 0, 50, 5, 0},
+            {0, 0, 0, 50, 5, 0}
     };
     //==================================================
     // States
@@ -36,6 +39,7 @@ public class MainAutoState extends LinearOpMode {
     public void runOpMode() {
         RobotDrive robotDrive = new RobotDrive(hardwareMap);
         Turret turret = new Turret(hardwareMap);
+
         //==================================================
         // Initialization
         //==================================================

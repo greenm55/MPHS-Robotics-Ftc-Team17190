@@ -1,8 +1,9 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Helpers;
+
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
 
 public class RobotDrive {
 
@@ -22,6 +23,8 @@ public class RobotDrive {
         backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
         backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
 
+        Odometry odometry = new Odometry(hardwareMap);
+
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -36,19 +39,20 @@ public class RobotDrive {
         frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        odometry.reset();
     }
 
 
     public void update() {
 
-        robotPosition = Odometry.evalPos(
-                frontRightDrive.getCurrentPosition(),
-                frontLeftDrive.getCurrentPosition(),
-                backRightDrive.getCurrentPosition()
-        );
+        Odometry odometry = new Odometry(hardwareMap);
+
+        robotPosition = odometry.evalPos();
     }
 
     public double[] getRobotPosition() {
+        update();
         return robotPosition;
     }
 
@@ -79,6 +83,8 @@ public class RobotDrive {
 
     public boolean atPoint(double[] targetPoint) {
 
+        update();
+
         double errorX = targetPoint[0] - robotPosition[0];
         double errorY = targetPoint[1] - robotPosition[1];
         double errorT = angleWrap(targetPoint[2] - robotPosition[2]);
@@ -101,7 +107,7 @@ public class RobotDrive {
         double targetRobotX = targetPoint[0] * Math.cos(targetPoint[2]) + targetPoint[1] * Math.sin(targetPoint[2]);
         double targetRobotY = targetPoint[0] * Math.sin(targetPoint[2]) + targetPoint[1] * Math.cos(targetPoint[2]);
 
-        double XYDist = Math.sqrt(targetRobotX * targetRobotX + targetRobotY * targetRobotY);
+        double XYDist = Math.sqrt(Math.pow(targetRobotX,2) + Math.pow(targetRobotY,2));
 
         double percentRemaining;
 

@@ -1,29 +1,46 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Helpers;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Odometry {
 
     //=======================
     //ODOMETRY CONSTANTS
 
-    public static double wheelDiameter = 48.0; // mm
-    public static double tickPerRev = 537.7;
-    public static final double trackWidth = 350.0;   // mm
-    public static final double PerpendicularOffset = 120.0;   // mm
+    public static double wheelDiameter = 32.0; // mm
+    public static double tickPerRev = 2000.0;
+    public static double trackWidth = 138.6;   // mm
+    public static double perpendicularOffset = 228.10;   // mm
 
     //ODOMETRY CONSTANTS
     //=======================
 
+
     static double prevRight = 0;
     static double prevLeft = 0;
     static double prevPerpendicular = 0;
-
+    public final DcMotor frontLeftDrive, frontRightDrive,backLeftDrive,backRightDrive;
     public static double robotT = 0;
     public static double fieldX = 0;
     public static double fieldY = 0;
 
     public static double[] robotPosition = {0,0,0};
 
-    public static double[] evalPos(double frontRightEncoder, double frontLeftEncoder, double backRightEncoder) {
+    public Odometry(HardwareMap hardwareMap){
+
+        frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
+        frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
+        backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
+        backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
+    }
+
+    // Front right and Left are Right and right encoder, and back right it the perpendicular
+
+    public double[] evalPos() {
+
+        double frontLeftEncoder = frontLeftDrive.getCurrentPosition();
+        double frontRightEncoder = frontRightDrive.getCurrentPosition();
+        double perpendicularEncoder = backRightDrive.getCurrentPosition();
 
         double distPerTick = (Math.PI * wheelDiameter) / tickPerRev;
         double deltaLeft, deltaRight, deltaPerpendicular;
@@ -32,11 +49,13 @@ public class Odometry {
         double fieldDeltaX, fieldDeltaY;
         double averageT;
 
+        // Undo REVERSE on left side
+        frontRightEncoder *= -1;
 
         // Step 1 — Read encoders
         curRight = frontRightEncoder;
         curLeft = frontLeftEncoder;
-        curPerpendicular = backRightEncoder;
+        curPerpendicular = perpendicularEncoder;
 
         // Step 2 — Calculate change in encoders
         deltaRight = (curRight - prevRight) * distPerTick;
@@ -46,7 +65,7 @@ public class Odometry {
         //Step 3 — Calculate movement
         deltaT = (deltaRight - deltaLeft) / trackWidth;
         deltaY = (deltaRight + deltaLeft) / 2;
-        deltaX = deltaPerpendicular - PerpendicularOffset * deltaT;
+        deltaX = deltaPerpendicular - perpendicularOffset * deltaT;
 
         //Step 4 - Calculate average heading
         averageT = robotT + (deltaT / 2);
@@ -72,6 +91,21 @@ public class Odometry {
 
         return robotPosition;
     }
+    public void reset() {
+
+        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        prevRight = prevLeft = prevPerpendicular = 0;
+        robotT = fieldX = fieldY = 0;
+        robotPosition = new double[]{0, 0, 0};
+        robotPosition = evalPos();
+    }
 
     public static double getX(){
         return robotPosition[0];
@@ -83,5 +117,9 @@ public class Odometry {
 
     public static double getHeading(){
         return robotPosition[2];
+    }
+
+    public static double[] getRobotPosition(){
+        return new double[]{getX(), getY(), getHeading()};
     }
 }
