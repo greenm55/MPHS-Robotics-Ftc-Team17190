@@ -56,7 +56,7 @@ public class AdvancedMecanum extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            Odometry.evalPos(frontRightDrive.getCurrentPosition(), frontLeftDrive.getCurrentPosition(), backRightDrive.getCurrentPosition());
+            odometry.evalPos();
             heading = Odometry.getHeading();
             // Note: Pushing up is -1
             leftXY = new float[]{-gamepad1.left_stick_y, gamepad1.left_stick_x};
@@ -81,7 +81,7 @@ public class AdvancedMecanum extends LinearOpMode {
 
             if(gamepad1.right_trigger_pressed){
                 while(!turret.shoot()){
-                    Odometry.evalPos(frontRightDrive.getCurrentPosition(), frontLeftDrive.getCurrentPosition(), backRightDrive.getCurrentPosition());
+                    odometry.evalPos();
                     position = Odometry.getRobotPosition();
                     turret.autoAim(position);
                 }

@@ -15,15 +15,11 @@ public class Odometry {
     //ODOMETRY CONSTANTS
     //=======================
 
-    public final DcMotor frontLeftDrive;
-    public final DcMotor frontRightDrive;
-    public final DcMotor backLeftDrive;
-    public final DcMotor backRightDrive;
 
     static double prevRight = 0;
     static double prevLeft = 0;
     static double prevPerpendicular = 0;
-
+    public final DcMotor frontLeftDrive, frontRightDrive,backLeftDrive,backRightDrive;
     public static double robotT = 0;
     public static double fieldX = 0;
     public static double fieldY = 0;
@@ -36,14 +32,15 @@ public class Odometry {
         frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
         backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
         backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
-
     }
 
     // Front right and Left are Right and right encoder, and back right it the perpendicular
 
-    public static double[] evalPos(double frontRightEncoder,
-                                   double frontLeftEncoder,
-                                   double backRightEncoder) {
+    public double[] evalPos() {
+
+        double frontLeftEncoder = frontLeftDrive.getCurrentPosition();
+        double frontRightEncoder = frontRightDrive.getCurrentPosition();
+        double perpendicularEncoder = backRightDrive.getCurrentPosition();
 
         double distPerTick = (Math.PI * wheelDiameter) / tickPerRev;
         double deltaLeft, deltaRight, deltaPerpendicular;
@@ -53,12 +50,12 @@ public class Odometry {
         double averageT;
 
         // Undo REVERSE on left side
-        frontLeftEncoder *= -1;
+        frontRightEncoder *= -1;
 
         // Step 1 — Read encoders
         curRight = frontRightEncoder;
         curLeft = frontLeftEncoder;
-        curPerpendicular = backRightEncoder;
+        curPerpendicular = perpendicularEncoder;
 
         // Step 2 — Calculate change in encoders
         deltaRight = (curRight - prevRight) * distPerTick;
@@ -96,14 +93,18 @@ public class Odometry {
     }
     public void reset() {
 
+        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         prevRight = prevLeft = prevPerpendicular = 0;
         robotT = fieldX = fieldY = 0;
         robotPosition = new double[]{0, 0, 0};
-        robotPosition = evalPos(
-                frontRightDrive.getCurrentPosition(),
-                frontLeftDrive.getCurrentPosition(),
-                backRightDrive.getCurrentPosition()
-        );
+        robotPosition = evalPos();
     }
 
     public static double getX(){

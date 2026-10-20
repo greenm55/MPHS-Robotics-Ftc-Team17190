@@ -50,7 +50,9 @@ public class TestOdo extends LinearOpMode {
             int fl = frontLeftDrive.getCurrentPosition();    // left pod
             int br = backRightDrive.getCurrentPosition();    // perpendicular pod
 
-            double[] pos = Odometry.evalPos(fr, fl, br);
+            double[] pos = odometry.evalPos();
+
+            fr *= -1;
 
             // Independent check: heading computed straight from the raw ticks,
             // not through Odometry's running state

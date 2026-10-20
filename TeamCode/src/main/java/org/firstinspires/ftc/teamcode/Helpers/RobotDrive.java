@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Helpers;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -44,11 +46,9 @@ public class RobotDrive {
 
     public void update() {
 
-        robotPosition = Odometry.evalPos(
-                frontRightDrive.getCurrentPosition(),
-                frontLeftDrive.getCurrentPosition(),
-                backRightDrive.getCurrentPosition()
-        );
+        Odometry odometry = new Odometry(hardwareMap);
+
+        robotPosition = odometry.evalPos();
     }
 
     public double[] getRobotPosition() {
