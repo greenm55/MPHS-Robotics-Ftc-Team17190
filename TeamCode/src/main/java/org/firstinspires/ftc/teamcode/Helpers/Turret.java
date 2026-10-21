@@ -17,7 +17,8 @@ public class Turret {
     }
     HuskyLens huskyLens;
 
-    public Turret(HardwareMap hardwareMap) {
+    public Turret(Telemetry telemetry, HardwareMap hardwareMap) {
+        this.telemetry = telemetry;
         huskyLens = hardwareMap.get(HuskyLens.class, "HuskyLens");
         huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
         // Initialize turret and shooter hardware here

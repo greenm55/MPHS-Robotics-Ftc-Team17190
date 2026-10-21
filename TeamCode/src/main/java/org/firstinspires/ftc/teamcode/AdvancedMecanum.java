@@ -19,7 +19,7 @@ public class AdvancedMecanum extends LinearOpMode {
 
         Odometry odometry = new Odometry(hardwareMap);
 
-        Turret turret = new Turret(hardwareMap);
+        Turret turret = new Turret(this.telemetry, hardwareMap);
 
         float[] wheelPower = {0,0,0,0}; // 0:FR, 1:FL, 2:BR, 3:BL
         float[] leftXY;

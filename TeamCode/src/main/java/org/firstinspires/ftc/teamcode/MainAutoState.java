@@ -38,7 +38,7 @@ public class MainAutoState extends LinearOpMode {
     @Override
     public void runOpMode() {
         RobotDrive robotDrive = new RobotDrive(hardwareMap);
-        Turret turret = new Turret(hardwareMap);
+        Turret turret = new Turret(this.telemetry, hardwareMap);
 
         //==================================================
         // Initialization
