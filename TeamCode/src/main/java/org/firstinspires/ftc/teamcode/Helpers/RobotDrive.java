@@ -51,11 +51,6 @@ public class RobotDrive {
         robotPosition = odometry.evalPos();
     }
 
-    public double[] getRobotPosition() {
-        update();
-        return robotPosition;
-    }
-
     public void goToPoint(double[] targetPoint) {
         double[] wheelPower = targeter(targetPoint);
 

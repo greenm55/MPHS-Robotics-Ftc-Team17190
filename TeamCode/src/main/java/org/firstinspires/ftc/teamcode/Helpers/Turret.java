@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Helpers;
 
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 
@@ -9,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Turret {
 
-    private Telemetry telemetry;
+    private final Telemetry telemetry;
     public enum TargetState {
         LEFT_UP,
         RIGHT_UP,
@@ -49,7 +51,10 @@ public class Turret {
         }
     }
 
-    public void autoAim(double[] robotPosition) {
+    public void autoAim() {
+        Odometry odo = new Odometry(hardwareMap);
+
+        double [] robotPosition = odo.evalPos();
         // Calculate and move turret here
         double thf= (robotPosition[2]);
         double xf= robotPosition[0];

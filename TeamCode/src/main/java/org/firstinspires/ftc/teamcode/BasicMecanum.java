@@ -17,7 +17,6 @@ public class BasicMecanum extends LinearOpMode {
         double[] wheelPower = {0,0,0,0}; // 0:FR, 1:FL, 2:BR, 3:BL
         double[] leftXY;
         double[] rightXY;
-        double max;
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -30,7 +29,7 @@ public class BasicMecanum extends LinearOpMode {
 
         while (opModeIsActive()) {
             // Note: Pushing up is -1
-            leftXY = new double[]{ -1 * (gamepad1.left_stick_y), gamepad1.left_stick_x};
+            leftXY = new double[]{gamepad1.left_stick_y, gamepad1.left_stick_x};
             rightXY = new double[]{gamepad1.right_stick_y, gamepad1.right_stick_x};
 
             wheelPower[0] = leftXY[0] + leftXY[1] - rightXY[1]; // Left x + Left y - Right x
@@ -44,10 +43,17 @@ public class BasicMecanum extends LinearOpMode {
             backLeftDrive.setPower(wheelPower[3]);
 
             telemetry.addLine("Controller inputs");
+            //noinspection SpellCheckingInspection
             telemetry.addData("LeftY:", leftXY[0]);
             telemetry.addData("LeftX:", leftXY[1]);
+            //noinspection SpellCheckingInspection
             telemetry.addData("RightY:", rightXY[1]);
             telemetry.addData("RightX:", rightXY[0]);
+
+            telemetry.addData("FR Power: ", wheelPower[0]);
+            telemetry.addData("FL Power: ", wheelPower[1]);
+            telemetry.addData("BR Power: ", wheelPower[2]);
+            telemetry.addData("BL Power: ", wheelPower[3]);
 
             telemetry.update();
         }
