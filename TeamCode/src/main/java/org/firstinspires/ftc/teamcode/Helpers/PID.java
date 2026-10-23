@@ -8,7 +8,19 @@ public class PID {
     double kPT = .5;  // P term for theta
     double kDT = 0.05;   // D gain for theta
     double kIT = 0.0; // I gain for theta
-    double maxAccel = 1.0;   // power per second; 1 / maxAccel = seconds to reach full power
+    double maxAccel = .28;   // power per second; 1 / maxAccel = seconds to reach full power
+    /* Higher number = faster acceleration
+    2.0 = .5s About 7.25in loss
+    1.0 = 1s About 3in loss
+    0.5 = 2s About 2.5in loss
+    0.25 = 4s About .75in loss
+    Losses are for strafing both left and right move backwards
+
+    X is input Y is output
+    Time is 1/(x^-1)
+    Loss is about y=4.96429+3.16878 * ln(x)
+
+    */
     double[] motorPower = new double[4]; // motor power list
     long lastTime = System.nanoTime();
 

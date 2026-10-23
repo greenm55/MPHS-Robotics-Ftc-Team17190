@@ -59,9 +59,9 @@ public class TestPIDRemoveLater extends LinearOpMode {
             telemetry.addData("motor power BR:", motorPower[2]);
             telemetry.addData("motor power BL:", motorPower[3]);
 
-            telemetry.addData("D0:",pid.dTerm[0]);
-            telemetry.addData("D1:",pid.dTerm[1]);
-            telemetry.addData("D2:",pid.dTerm[2]);
+            telemetry.addData("DX:",pid.dTerm[0]);
+            telemetry.addData("DY:",pid.dTerm[1]);
+            telemetry.addData("DT:",pid.dTerm[2]);
 
             telemetry.update();
         }
