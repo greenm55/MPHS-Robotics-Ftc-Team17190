@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.Helpers.Odometry;
 import org.firstinspires.ftc.teamcode.Helpers.PID;
 
 @Autonomous(name = "Test PID Remove Later")
+@Disabled
 public class TestPIDRemoveLater extends LinearOpMode {
 
     @Override
@@ -28,7 +29,7 @@ public class TestPIDRemoveLater extends LinearOpMode {
         Odometry odo = new Odometry(hardwareMap);
         PID pid = new PID(.001,0,0.0002);
 
-        double[] target = {0,0,0};
+        double[] target = {0,0,Math.toRadians(30)};
         double[] roboPos;
         double[] motorPower;
         odo.reset();

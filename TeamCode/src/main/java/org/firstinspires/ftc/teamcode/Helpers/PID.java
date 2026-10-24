@@ -1,7 +1,4 @@
 package org.firstinspires.ftc.teamcode.Helpers;
-
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
 public class PID {
 
     double kP, kI, kD;  // P I and D terms
@@ -27,8 +24,9 @@ public class PID {
     double[] lastCmd = new double[3];
     double[] lastPos = new double[3];
     boolean hasLast = false;
-
     public double[] dTerm = new double[3];
+    double[] integral = new double[3];   // field X, field Y, heading
+    double maxI = 0.15;
 
 
     public PID(double P, double I, double D) {
@@ -63,6 +61,14 @@ public class PID {
         double dt = (now - lastTime) / 1e9;
         lastTime = now;
 
+        double maxStep = maxAccel * dt;
+        for (int i = 0; i < 3; i++) {
+            double delta = scaledPower[i] - lastCmd[i];
+            delta = Math.max(-maxStep, Math.min(maxStep, delta));
+            lastCmd[i] += delta;
+            scaledPower[i] = lastCmd[i];
+        }
+
 
         if (hasLast && dt > 0) {
             double dT = roboPos[2] - lastPos[2];  // change in heading
@@ -81,21 +87,30 @@ public class PID {
             dTerm[1] = -kD  * velRobotY;
             dTerm[2] = -kDT * vT;
 
+            integral[0] += errorX * dt;
+            integral[1] += errorY * dt;
+            integral[2] += errorT * dt;
+
+            double[] kIs = {kI, kI, kIT};
+            for (int i = 0; i < 3; i++) {
+                if (kIs[i] != 0) {
+                    double lim = maxI / kIs[i];   // largest integral that adds maxI power
+                    integral[i] = Math.max(-lim, Math.min(lim, integral[i]));
+                }
+            }
+
         }
         lastPos[0] = roboPos[0];
         lastPos[1] = roboPos[1];
         lastPos[2] = roboPos[2];
         hasLast = true;
 
-        for (int i = 0; i < 3; i++) scaledPower[i] += dTerm[i];
+        double intX =  integral[0] * cos + integral[1] * sin;
+        double intY = -integral[0] * sin + integral[1] * cos;
 
-        double maxStep = maxAccel * dt;
-        for (int i = 0; i < 3; i++) {
-            double delta = scaledPower[i] - lastCmd[i];
-            delta = Math.max(-maxStep, Math.min(maxStep, delta));
-            lastCmd[i] += delta;
-            scaledPower[i] = lastCmd[i];
-        }
+        double[] iTerm = {kI * intX, kI * intY, kIT * integral[2]};
+
+        for (int i = 0; i < 3; i++) scaledPower[i] += dTerm[i] + iTerm[i];
 
         motorPower[0] = scaledPower[0] + scaledPower[1] - scaledPower[2]; //FR error[0] + error[1] - error[2]
         // Left x + Left y - Right x
@@ -119,5 +134,9 @@ public class PID {
         lastTime = System.nanoTime();
         lastCmd[0] = lastCmd[1] = lastCmd[2] = 0;
         hasLast = false;
+        for (int i=0; i<=2;){
+            integral[i] = 0;
+            i++;
+        }
     }
 }

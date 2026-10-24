@@ -1,29 +1,36 @@
 package org.firstinspires.ftc.teamcode.Helpers;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class RobotDrive {
 
-    private final DcMotor frontLeftDrive;
-    private final DcMotor frontRightDrive;
-    private final DcMotor backLeftDrive;
-    private final DcMotor backRightDrive;
+    private static final double MIN_POS_TOL  = Math.PI * Odometry.wheelDiameter / Odometry.tickPerRev; // mm
+    private static final double MIN_HEAD_TOL = MIN_POS_TOL / Odometry.trackWidth;                       // rad
+
+    // your choice: how sloppy is precision = 0?
+    private static final double MAX_POS_TOL  = 300;  // mm, placeholder
+    private static final double MAX_HEAD_TOL = 0.5;  // rad, placeholder
 
 
-    private double[] robotPosition = {0, 0, 0};
+    private double[] robotPosition = new double [3];
+    double[][] targetPoints;
+    private boolean stopped = false;
+    int targetNum = 0;
+
+    private final Odometry odo;
+    private final Turret turret;
+    private final Intake intake;
+    PID pid = new PID(.001, .001, .0002);
 
 
-    public RobotDrive(HardwareMap hardwareMap) {
+    public RobotDrive(Telemetry telemetry, HardwareMap hardwareMap, double[][] tP) {
 
-        frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
-        frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
-        backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
-
-        Odometry odometry = new Odometry(hardwareMap);
+        DcMotor frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
+        DcMotor frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
+        DcMotor backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
+        DcMotor backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -40,114 +47,53 @@ public class RobotDrive {
         backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        odometry.reset();
+        this.targetPoints = tP; // targetPoint[target number][X,Y,T, tolerance (0-1), [0-3](nothing, intake while moving, shoot, intake flower)]
+        odo = new Odometry(hardwareMap);
+        turret = new Turret(telemetry, hardwareMap);
+        intake = new Intake(3,0,hardwareMap);
+        odo.reset();
     }
 
+    public boolean atPoint(int tarNum) {
+        double precision = targetPoints[tarNum][3];
+        double[] minTol = {MIN_POS_TOL, MIN_POS_TOL, MIN_HEAD_TOL};
+        double[] maxTol = {MAX_POS_TOL, MAX_POS_TOL, MAX_HEAD_TOL};
 
-    public void update() {
-
-        Odometry odometry = new Odometry(hardwareMap);
-
-        robotPosition = odometry.evalPos();
-    }
-
-    public void goToPoint(double[] targetPoint) {
-        double[] wheelPower = targeter(targetPoint);
-
-        double maxPower = Math.max(
-                Math.max(
-                        Math.abs(wheelPower[0]),
-                        Math.abs(wheelPower[1])
-                ),
-                Math.max(
-                        Math.abs(wheelPower[2]),
-                        Math.abs(wheelPower[3])
-                )
-        );
-
-        if (maxPower != 0) {
-            frontRightDrive.setPower(wheelPower[0] / maxPower);
-            frontLeftDrive.setPower(wheelPower[1] / maxPower);
-            backRightDrive.setPower(wheelPower[2] / maxPower);
-            backLeftDrive.setPower(wheelPower[3] / maxPower);
-
-        } else {
-            stop();
+        for (int i = 0; i < 3; i++) {
+            double err = targetPoints[tarNum][i] - robotPosition[i];
+            if (i == 2) {                       // wrap heading like PID does
+                while (err >  Math.PI) err -= 2 * Math.PI;
+                while (err < -Math.PI) err += 2 * Math.PI;
+            }
+            double allowed = minTol[i] + (1 - precision) * (maxTol[i] - minTol[i]);
+            if (Math.abs(err) > allowed) return false;
         }
+        return true;
     }
+    public double[] moveRobot() {
+        robotPosition = odo.evalPos();
+        int startNum = targetNum;
 
-    public boolean atPoint(double[] targetPoint) {
+        while (targetNum < targetPoints.length) {
+            if (!stopped && !atPoint(targetNum)) break;     // haven't reached this point yet
 
-        update();
-
-        double errorX = targetPoint[0] - robotPosition[0];
-        double errorY = targetPoint[1] - robotPosition[1];
-        double errorT = angleWrap(targetPoint[2] - robotPosition[2]);
-
-        double XYError = Math.sqrt(errorX * errorX + errorY * errorY);
-
-        return XYError <= targetPoint[3] && Math.abs(errorT) <= targetPoint[4];
-    }
-    private double[] targeter(double[] targetPoint) {
-
-        double errorX = targetPoint[0] - robotPosition[0];
-        double errorY = targetPoint[1] - robotPosition[1];
-        double errorT = angleWrap(targetPoint[2] - robotPosition[2]);
-
-        double robotErrorX = errorX * Math.cos(robotPosition[2]) + errorY * Math.sin(robotPosition[2]);
-        double robotErrorY = -errorX * Math.sin(robotPosition[2]) + errorY * Math.cos(robotPosition[2]);
-
-        double XYError = Math.sqrt(robotErrorX * robotErrorX + robotErrorY * robotErrorY);
-
-        double targetRobotX = targetPoint[0] * Math.cos(targetPoint[2]) + targetPoint[1] * Math.sin(targetPoint[2]);
-        double targetRobotY = targetPoint[0] * Math.sin(targetPoint[2]) + targetPoint[1] * Math.cos(targetPoint[2]);
-
-        double XYDist = Math.sqrt(Math.pow(targetRobotX,2) + Math.pow(targetRobotY,2));
-
-        double percentRemaining;
-
-        if (XYDist == 0) {
-            percentRemaining = 0;
-        } else {
-            percentRemaining = XYError / XYDist;
+            if (targetPoints[targetNum][4] > 1) {           // hold point
+                stopped = true;// latch: keep polling until done
+                if (targetPoints[targetNum][4] == 2) { // shoot
+                    if (!turret.shoot()) break;                  // still stopped, stay on this point
+                    stopped = false;// all balls launched
+                }
+                if (targetPoints[targetNum][4] == 3){ // take flower
+                    if (!intake.flowerIntake())break;
+                    stopped = false;
+                }
+            }
+            targetNum++;
         }
+        if (targetNum != startNum) pid.resetTime();
 
-        double powerScale;
+        if (targetNum >= targetPoints.length) return new double[4];
 
-        if (percentRemaining <= 0.25) {
-            powerScale = 3 * percentRemaining + 0.25;
-        } else if (percentRemaining <= 0.75) {
-            powerScale = 1;
-
-        } else {
-            powerScale = -3 * percentRemaining + 3.25;
-        }
-
-        double frontRightPower = (robotErrorY - robotErrorX - errorT) * powerScale;
-        double frontLeftPower = (robotErrorY + robotErrorX + errorT) * powerScale;
-        double backRightPower = (robotErrorY + robotErrorX - errorT) * powerScale;
-        double backLeftPower = (robotErrorY - robotErrorX + errorT) * powerScale;
-
-        return new double[]{frontRightPower, frontLeftPower, backRightPower, backLeftPower};
-    }
-
-    public void stop() {
-        frontRightDrive.setPower(0);
-        frontLeftDrive.setPower(0);
-        backRightDrive.setPower(0);
-        backLeftDrive.setPower(0);
-    }
-
-    private double angleWrap(double angle) {
-
-        while (angle > Math.PI) {
-            angle -= 2 * Math.PI;
-        }
-
-        while (angle < -Math.PI) {
-            angle += 2 * Math.PI;
-        }
-
-        return angle;
+        return pid.updateRobot(robotPosition, targetPoints[targetNum]);
     }
 }
