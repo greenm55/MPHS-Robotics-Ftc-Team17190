@@ -20,9 +20,8 @@ public class RobotDrive {
     int targetNum = 0;
 
     private final Odometry odo;
-    private final Turret turret;
     private final Intake intake;
-    PID pid = new PID(.001, .001, .0002);
+    PID pid = new PID();
 
 
     public RobotDrive(Telemetry telemetry, HardwareMap hardwareMap, double[][] tP) {
@@ -49,7 +48,6 @@ public class RobotDrive {
 
         this.targetPoints = tP; // targetPoint[target number][X,Y,T, tolerance (0-1), [0-3](nothing, intake while moving, shoot, intake flower)]
         odo = new Odometry(hardwareMap);
-        turret = new Turret(telemetry, hardwareMap);
         intake = new Intake(3,0,hardwareMap);
         odo.reset();
     }
@@ -80,7 +78,7 @@ public class RobotDrive {
             if (targetPoints[targetNum][4] > 1) {           // hold point
                 stopped = true;// latch: keep polling until done
                 if (targetPoints[targetNum][4] == 2) { // shoot
-                    if (!turret.shoot()) break;                  // still stopped, stay on this point
+                    if (true) break;                  // still stopped, stay on this point; replace true with !turret.shoot()
                     stopped = false;// all balls launched
                 }
                 if (targetPoints[targetNum][4] == 3){ // take flower
@@ -92,7 +90,7 @@ public class RobotDrive {
         }
         if (targetNum != startNum) pid.resetTime();
 
-        if (targetNum >= targetPoints.length) return new double[4];
+        if (targetNum >= targetPoints.length) return pid.updateRobot(robotPosition, new double[]{0, 0, 0});
 
         return pid.updateRobot(robotPosition, targetPoints[targetNum]);
     }

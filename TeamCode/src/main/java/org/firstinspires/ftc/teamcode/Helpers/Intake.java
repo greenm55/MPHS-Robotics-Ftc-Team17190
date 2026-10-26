@@ -25,12 +25,12 @@ public class Intake {
         return ballCount;
     }
     public void runIntake(){
-        frontLeftDrive.setPower(1);
+        //frontLeftDrive.setPower(1);
         ballCount = checkBalls();
         if (ballCount > ballMax){
-            frontLeftDrive.setPower(-1);
+            //frontLeftDrive.setPower(-1);
         } else if (ballCount == ballMax) {
-            frontLeftDrive.setPower(0);
+            //frontLeftDrive.setPower(0);
         }
     }
 }

@@ -9,8 +9,8 @@ public class Odometry {
 
     public static double wheelDiameter = 32.0; // mm
     public static double tickPerRev = 2000.0;
-    public static double trackWidth = 138.6;   // mm
-    public static double perpendicularOffset = 228.10;   // mm
+    public static double trackWidth = 144;   // mm
+    public static double perpendicularOffset = 102;   // mm
 
     //ODOMETRY CONSTANTS
     //=======================
@@ -48,8 +48,9 @@ public class Odometry {
         double fieldDeltaX, fieldDeltaY;
         double averageT;
 
-        // Undo REVERSE on left side
-        frontRightEncoder *= -1;
+        // Undo REVERSE
+        frontLeftEncoder *= -1;
+        perpendicularEncoder *= -1;
 
         // Step 1 — Read encoders
         curRight = frontRightEncoder;

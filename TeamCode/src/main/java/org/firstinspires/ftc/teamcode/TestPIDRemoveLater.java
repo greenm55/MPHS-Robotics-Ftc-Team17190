@@ -27,9 +27,9 @@ public class TestPIDRemoveLater extends LinearOpMode {
         // target == 0,0,0
         // eg hold
         Odometry odo = new Odometry(hardwareMap);
-        PID pid = new PID(.001,0,0.0002);
+        PID pid = new PID();
 
-        double[] target = {0,0,Math.toRadians(30)};
+        double[] target = {0,0,0};
         double[] roboPos;
         double[] motorPower;
         odo.reset();
@@ -46,10 +46,10 @@ public class TestPIDRemoveLater extends LinearOpMode {
             roboPos = odo.evalPos();
             motorPower = pid.updateRobot(roboPos, target);
 
-            frontRightDrive.setPower(-motorPower[0]);
-            frontLeftDrive.setPower(-motorPower[1]);
-            backRightDrive.setPower(-motorPower[2]);
-            backLeftDrive.setPower(-motorPower[3]);
+            frontRightDrive.setPower(motorPower[0]);
+            frontLeftDrive.setPower(motorPower[1]);
+            backRightDrive.setPower(motorPower[2]);
+            backLeftDrive.setPower(motorPower[3]);
 
             telemetry.addData("Robot Position X :", roboPos[0]);
             telemetry.addData("Robot Position Y :", roboPos[1]);

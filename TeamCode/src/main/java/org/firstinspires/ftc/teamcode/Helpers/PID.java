@@ -1,23 +1,8 @@
 package org.firstinspires.ftc.teamcode.Helpers;
 public class PID {
 
-    double kP, kI, kD;  // P I and D terms
-    double kPT = .5;  // P term for theta
-    double kDT = 0.05;   // D gain for theta
-    double kIT = 0.0; // I gain for theta
-    double maxAccel = .28;   // power per second; 1 / maxAccel = seconds to reach full power
-    /* Higher number = faster acceleration
-    2.0 = .5s About 7.25in loss
-    1.0 = 1s About 3in loss
-    0.5 = 2s About 2.5in loss
-    0.25 = 4s About .75in loss
-    Losses are for strafing both left and right move backwards
+    double kP, kI, kD, kPT, kDT, kIT;  // P I and D terms
 
-    X is input Y is output
-    Time is 1/(x^-1)
-    Loss is about y=4.96429+3.16878 * ln(x)
-
-    */
     double[] motorPower = new double[4]; // motor power list
     long lastTime = System.nanoTime();
 
@@ -27,14 +12,26 @@ public class PID {
     public double[] dTerm = new double[3];
     double[] integral = new double[3];   // field X, field Y, heading
     double maxI = 0.15;
+    double maxIT = 0.1;
 
 
-    public PID(double P, double I, double D) {
+    public PID(double P, double I, double D, double PT, double IT, double DT) {
         // set gains
         this.kP = P;
         this.kI = I;
         this.kD = D;
+        this.kPT = PT;
+        this.kIT = IT;
+        this.kDT = DT;
 
+    }
+    public PID(){
+        this.kP = 0.005;
+        this.kI = 0.0075;
+        this.kD = 0.002;
+        this.kPT = 1;
+        this.kIT = 0.5;
+        this.kDT = 0.07;
     }
 
 
@@ -61,15 +58,6 @@ public class PID {
         double dt = (now - lastTime) / 1e9;
         lastTime = now;
 
-        double maxStep = maxAccel * dt;
-        for (int i = 0; i < 3; i++) {
-            double delta = scaledPower[i] - lastCmd[i];
-            delta = Math.max(-maxStep, Math.min(maxStep, delta));
-            lastCmd[i] += delta;
-            scaledPower[i] = lastCmd[i];
-        }
-
-
         if (hasLast && dt > 0) {
             double dT = roboPos[2] - lastPos[2];  // change in heading
             while (dT >  Math.PI) dT -= 2 * Math.PI;
@@ -91,12 +79,14 @@ public class PID {
             integral[1] += errorY * dt;
             integral[2] += errorT * dt;
 
-            double[] kIs = {kI, kI, kIT};
-            for (int i = 0; i < 3; i++) {
-                if (kIs[i] != 0) {
-                    double lim = maxI / kIs[i];   // largest integral that adds maxI power
-                    integral[i] = Math.max(-lim, Math.min(lim, integral[i]));
-                }
+            if (kI != 0){
+                double lim = maxI / kI;
+                integral[0] = Math.max(-lim, Math.min(lim, integral[0]));
+                integral[1] = Math.max(-lim, Math.min(lim, integral[1]));
+            }
+            if (kIT != 0){
+                double lim = maxIT / kIT;
+                integral[2] = Math.max(-lim, Math.min(lim, integral[2]));
             }
 
         }
@@ -110,15 +100,13 @@ public class PID {
 
         double[] iTerm = {kI * intX, kI * intY, kIT * integral[2]};
 
-        for (int i = 0; i < 3; i++) scaledPower[i] += dTerm[i] + iTerm[i];
+        for (int i = 0; i < 3; i++) scaledPower[i] += (dTerm[i] + iTerm[i]);
 
-        motorPower[0] = scaledPower[0] + scaledPower[1] - scaledPower[2]; //FR error[0] + error[1] - error[2]
-        // Left x + Left y - Right x
-        motorPower[1] = -scaledPower[0] + scaledPower[1] + scaledPower[2]; //FL -error[0] + error[1] + error[2]
-        // Left x - Left y + Right x
-        motorPower[2] = -scaledPower[0] + scaledPower[1] - scaledPower[2]; //BR -error[0] + error[1] - error[2]
-        // Left x - Left y - Right x
-        motorPower[3] = scaledPower[0] + scaledPower[1] + scaledPower[2]; //BL error[0] + error[1] + error[2]
+        motorPower[0] = -(scaledPower[0] - scaledPower[1] - scaledPower[2]); //FR
+        motorPower[1] = -(-scaledPower[0] - scaledPower[1] + scaledPower[2]); //FL
+        motorPower[2] = -(-scaledPower[0] - scaledPower[1] - scaledPower[2]); //BR
+        motorPower[3] = -(scaledPower[0] - scaledPower[1] + scaledPower[2]); //BL
+
 
         double max = 1.0;
         double maxPower = 1.0;
