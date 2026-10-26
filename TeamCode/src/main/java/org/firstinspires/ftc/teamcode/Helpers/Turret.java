@@ -10,11 +10,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 public class Turret {
-
+    int side=0;
     private final Telemetry telemetry;
     public enum TargetState {
-        LEFT_UP,
-        RIGHT_UP,
+        sideUp,
+        sideDown,
         UNKNOWN
     }
     HuskyLens huskyLens;
@@ -22,7 +22,6 @@ public class Turret {
     public Turret(Telemetry telemetry, HardwareMap hardwareMap) {
         this.telemetry = telemetry;
         huskyLens = hardwareMap.get(HuskyLens.class, "HuskyLens");
-        huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
         // Initialize turret and shooter hardware here
         telemetry.update();
     }
@@ -32,13 +31,43 @@ public class Turret {
         }
         return -1; // Unknown ID
     }
-    private TargetState getTagSide(int originalTagId) {
+    private TargetState getSideUpClass(){
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_CLASSIFICATION);
+
+        HuskyLens.Block[] blocks = huskyLens.blocks();
+        telemetry.addData("Detected Block Count", blocks.length);
+
+        for (int i = 0; i < blocks.length; i++) {
+            HuskyLens.Block block = blocks[i];
+
+            // Print the classification parameters to telemetry
+            telemetry.addLine(String.format("\nBlock [%d/%d]", i + 1, blocks.length));
+
+            // id corresponds to the learned item number (ID1, ID2, etc.)
+            telemetry.addData(" Learned ID", block.id);
+            telemetry.addData(" Center X", block.x);
+            telemetry.addData(" Center Y", block.y);
+            telemetry.addData(" Width", block.width);
+            telemetry.addData(" Height", block.height);
+            side= block.id;
+        }
+        switch (side){
+            case 1:
+                return TargetState.sideUp;
+            case 2:
+                return TargetState.sideDown;
+            default:
+                return TargetState.UNKNOWN;
+        }
+
+    }
+  /*  private TargetState getTagSide(int originalTagId) {
         switch (originalTagId) {
             case 30:
             case 31:
             case 32:
             case 33:
-                return TargetState.LEFT_UP;
+                return TargetState.;
 
             case 34:
             case 35:
@@ -50,6 +79,8 @@ public class Turret {
                 return TargetState.UNKNOWN;
         }
     }
+
+   */
 
     public void autoAim() {
         Odometry odo = new Odometry(hardwareMap);
@@ -78,7 +109,9 @@ public class Turret {
         int leftUp = 0;
         int rightUp = 0;
 
-        HuskyLens.Block[] blocks = huskyLens.blocks();
+
+        TargetState side = getSideUpClass();
+      /*  HuskyLens.Block[] blocks = huskyLens.blocks();
 
         // Use .length for arrays instead of .size()
         telemetry.addData("Total Blocks Found", blocks.length);
@@ -96,7 +129,7 @@ public class Turret {
             telemetry.addData("HuskyLens ID", tagId);
             telemetry.addData("Original AprilTag", originalTagId);
             telemetry.addData("Tag Side", side);
-            if (side ==  TargetState.LEFT_UP){
+            if (side ==  TargetState.){
                 leftUp +=1;
             } else if (side == TargetState.RIGHT_UP) {
                 rightUp+=1;
@@ -111,6 +144,8 @@ public class Turret {
         if (leftUp >0 && rightUp >0){
             telemetry.addLine("BOTH SIDES SEEN!");
         }
+
+       */
     }
 
 
