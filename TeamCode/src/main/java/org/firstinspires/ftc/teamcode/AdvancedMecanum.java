@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Helpers.Odometry;
 import org.firstinspires.ftc.teamcode.Helpers.Turret;
 
-@TeleOp(name = "Basic Mecanum TeleOp")
+@TeleOp(name = "Advanced Mecanum TeleOp")
 public class AdvancedMecanum extends LinearOpMode {
 
     @Override
@@ -19,7 +19,7 @@ public class AdvancedMecanum extends LinearOpMode {
 
         Odometry odometry = new Odometry(hardwareMap);
 
-        Turret turret = new Turret(hardwareMap);
+        Turret turret = new Turret(this.telemetry, hardwareMap);
 
         float[] wheelPower = {0,0,0,0}; // 0:FR, 1:FL, 2:BR, 3:BL
         float[] leftXY;
@@ -77,13 +77,13 @@ public class AdvancedMecanum extends LinearOpMode {
 
             position = Odometry.getRobotPosition();
 
-            turret.autoAim(position);
+            turret.autoAim();
 
             if(gamepad1.right_trigger_pressed){
                 while(!turret.shoot()){
                     odometry.evalPos();
                     position = Odometry.getRobotPosition();
-                    turret.autoAim(position);
+                    turret.autoAim();
                 }
             }
 

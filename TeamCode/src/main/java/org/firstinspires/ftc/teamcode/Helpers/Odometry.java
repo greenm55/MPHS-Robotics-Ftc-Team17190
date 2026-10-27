@@ -9,8 +9,8 @@ public class Odometry {
 
     public static double wheelDiameter = 32.0; // mm
     public static double tickPerRev = 2000.0;
-    public static double trackWidth = 138.6;   // mm
-    public static double perpendicularOffset = 228.10;   // mm
+    public static double trackWidth = 144;   // mm
+    public static double perpendicularOffset = 102;   // mm
 
     //ODOMETRY CONSTANTS
     //=======================
@@ -19,18 +19,17 @@ public class Odometry {
     static double prevRight = 0;
     static double prevLeft = 0;
     static double prevPerpendicular = 0;
-    public final DcMotor frontLeftDrive, frontRightDrive,backLeftDrive,backRightDrive;
+    public final DcMotor frontLeftDrive, frontRightDrive,backRightDrive;
     public static double robotT = 0;
     public static double fieldX = 0;
     public static double fieldY = 0;
 
-    public static double[] robotPosition = {0,0,0};
+    public static double[] robotPositionF = {0,0,0};
 
     public Odometry(HardwareMap hardwareMap){
 
         frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
         backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
     }
 
@@ -49,8 +48,9 @@ public class Odometry {
         double fieldDeltaX, fieldDeltaY;
         double averageT;
 
-        // Undo REVERSE on left side
-        frontRightEncoder *= -1;
+        // Undo REVERSE
+        frontLeftEncoder *= -1;
+        perpendicularEncoder *= -1;
 
         // Step 1 — Read encoders
         curRight = frontRightEncoder;
@@ -80,16 +80,16 @@ public class Odometry {
         robotT += deltaT;
 
         //Step 7 - Update coordinates
-        robotPosition[0] = fieldX;
-        robotPosition[1] = fieldY;
-        robotPosition[2] = robotT;
+        robotPositionF[0] = fieldX;
+        robotPositionF[1] = fieldY;
+        robotPositionF[2] = robotT;
 
         //Step 8 - Update previous position
         prevRight = curRight;
         prevLeft = curLeft;
         prevPerpendicular = curPerpendicular;
 
-        return robotPosition;
+        return robotPositionF;
     }
     public void reset() {
 
@@ -103,20 +103,20 @@ public class Odometry {
 
         prevRight = prevLeft = prevPerpendicular = 0;
         robotT = fieldX = fieldY = 0;
-        robotPosition = new double[]{0, 0, 0};
-        robotPosition = evalPos();
+        robotPositionF = new double[]{0, 0, 0};
+        robotPositionF = evalPos();
     }
 
     public static double getX(){
-        return robotPosition[0];
+        return robotPositionF[0];
     }
 
     public static double getY(){
-        return robotPosition[1];
+        return robotPositionF[1];
     }
 
     public static double getHeading(){
-        return robotPosition[2];
+        return robotPositionF[2];
     }
 
     public static double[] getRobotPosition(){
