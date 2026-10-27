@@ -33,6 +33,17 @@ public class Odometry {
         backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
     }
 
+    public Odometry(HardwareMap hardwareMap, double[] sPos){
+
+        frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
+        frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
+        backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
+
+        fieldX = sPos[0];
+        fieldY = sPos[1];
+        robotT = sPos[2];
+    }
+
     public double[] evalPos() {
 
         // Front right and Left are Right and right encoder, and back right it the perpendicular
