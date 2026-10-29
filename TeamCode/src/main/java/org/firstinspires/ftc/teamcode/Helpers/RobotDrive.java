@@ -24,7 +24,7 @@ public class RobotDrive {
     PID pid = new PID();
 
 
-    public RobotDrive(Telemetry telemetry, HardwareMap hardwareMap, double[][] tP) {
+    public RobotDrive(HardwareMap hardwareMap, double[][] tP) {
 
         DcMotor frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
         DcMotor frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
@@ -48,6 +48,33 @@ public class RobotDrive {
 
         this.targetPoints = tP; // targetPoint[target number][X,Y,T, tolerance (0-1), [0-3](nothing, intake while moving, shoot, intake flower)]
         odo = new Odometry(hardwareMap);
+        intake = new Intake(3,0,hardwareMap);
+        odo.reset();
+    }
+    public RobotDrive(HardwareMap hardwareMap, double[][] tP, double[] sP) {
+
+        DcMotor frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
+        DcMotor frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
+        DcMotor backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
+        DcMotor backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
+
+        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
+
+        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        this.targetPoints = tP; // targetPoint[target number][X,Y,T, tolerance (0-1), [0-3](nothing, intake while moving, shoot, intake flower)]
+        odo = new Odometry(hardwareMap, sP);
         intake = new Intake(3,0,hardwareMap);
         odo.reset();
     }
