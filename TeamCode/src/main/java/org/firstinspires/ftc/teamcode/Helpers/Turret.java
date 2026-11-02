@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Helpers;
 
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+//import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
@@ -17,13 +17,54 @@ public class Turret {
         sideDown,
         UNKNOWN
     }
+    public enum TagSeen{
+        bothSides,
+        oneSide,
+        none
+    }
     HuskyLens huskyLens;
+    Odometry odo;
+    double[] target = null;
+    boolean blueAlliance = false;   // default red
 
+    public static class TagReport {
+        public final boolean red, blue, tiltA, tiltB;
+
+        public TagReport(boolean red, boolean blue, boolean tiltA, boolean tiltB) {
+            this.red = red; this.blue = blue; this.tiltA = tiltA; this.tiltB = tiltB;
+        }
+
+        public TagSeen alliances() { return summarize(red, blue); }
+        public TagSeen tiltSides() { return summarize(tiltA, tiltB); }
+
+        public boolean any()       { return red || blue; }
+        public boolean onlyRed()   { return red && !blue; }
+        public boolean onlyBlue()  { return blue && !red; }
+        public boolean onlyTiltA() { return tiltA && !tiltB; }
+        public boolean onlyTiltB() { return tiltB && !tiltA; }
+
+        private static TagSeen summarize(boolean a, boolean b) {
+            if (a && b) return TagSeen.bothSides;
+            if (a || b) return TagSeen.oneSide;
+            return TagSeen.none;
+        }
+    }
     public Turret(Telemetry telemetry, HardwareMap hardwareMap) {
         this.telemetry = telemetry;
         huskyLens = hardwareMap.get(HuskyLens.class, "HuskyLens");
+        odo = new Odometry(hardwareMap);
         // Initialize turret and shooter hardware here
         telemetry.update();
+    }
+
+    public Turret(Telemetry telemetry, HardwareMap hardwareMap, double[] targ) {
+        this(telemetry, hardwareMap);
+        this.target = targ;
+        odo = new Odometry(hardwareMap);
+    }
+
+    public void setBlueAlliance(boolean blue) {
+        this.blueAlliance = blue;
     }
     private int getOriginalTagId(int huskyId) {
         if (huskyId >= 1 && huskyId <= 8) {
@@ -36,6 +77,7 @@ public class Turret {
 
         HuskyLens.Block[] blocks = huskyLens.blocks();
         telemetry.addData("Detected Block Count", blocks.length);
+        side = 0;   // reset
 
         for (int i = 0; i < blocks.length; i++) {
             HuskyLens.Block block = blocks[i];
@@ -61,29 +103,28 @@ public class Turret {
         }
 
     }
-  /*  private TargetState getTagSide(int originalTagId) {
-        switch (originalTagId) {
-            case 30:
-            case 31:
-            case 32:
-            case 33:
-                return TargetState.;
+    public TagReport getTags() {
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
+        boolean red = false, blue = false, tiltA = false, tiltB = false;
 
-            case 34:
-            case 35:
-            case 36:
-            case 37:
-                return TargetState.RIGHT_UP;
+        for (HuskyLens.Block block : huskyLens.blocks()) {
+            int id = block.id;
+            if (id < 1 || id > 16) continue;          // ignore unknown tags
 
-            default:
-                return TargetState.UNKNOWN;
+            int group = (id - 1) / 4;                 // 0=red left, 1=red right, 2=blue left, 3=blue right (red audience view)
+            boolean isRedTag    = group < 2;
+            boolean leftFromRed = group % 2 == 0;
+            boolean isA = blueAlliance ? !leftFromRed : leftFromRed;   // tiltA = left from your alliance's view
+
+            if (isRedTag) red = true; else blue = true;
+            if (isA) tiltA = true; else tiltB = true;
         }
+        return new TagReport(red, blue, tiltA, tiltB);
     }
 
-   */
+
 
     public void autoAim() {
-        Odometry odo = new Odometry(hardwareMap);
 
         double [] robotPosition = odo.evalPos();
         // Calculate and move turret here
@@ -105,47 +146,39 @@ public class Turret {
         double beta = Math.hypot(yr,xr); //Math.pow((Math.pow(yr,2)+Math.pow(xr,2)),0.5);
         double thr=alpha-thf;
         thr = Math.atan2(Math.sin(thr), Math.cos(thr));
-        double thrDeg= Math.toDegrees(thr); //note: this is relative to the robots theta, not the field!!
-        int leftUp = 0;
-        int rightUp = 0;
+        //double thrDeg= Math.toDegrees(thr); //note: this is relative to the robots theta, not the field!!
 
 
-        TargetState side = getSideUpClass();
-      /*  HuskyLens.Block[] blocks = huskyLens.blocks();
 
-        // Use .length for arrays instead of .size()
-        telemetry.addData("Total Blocks Found", blocks.length);
+        TargetState state = getSideUpClass();
+    }
+    public double[] angleData(double[] angData ) { //given data double[] in order: encoder turret theta, encoder of hood. encoder of flywheel.
+        double enTh = angData[0];
+        double encWh= angData[2];
+        double encHd=angData[1];
+        //math here
+        double[] finalData= {0,0,0};
+        finalData[0]=0.0;//final (turret?) Theta in radians
+        finalData[1]=0.0;//final hood angle in radians
+        finalData[2]=0.0;//final expected velocity of flywheel
 
-        for (HuskyLens.Block block : blocks) {
-            // --- VERSION WITH SPECIFIC VARIABLES ---
-            int tagId = block.id;        // The ID assigned by HuskyLens
-            int posX = block.x;          // Horizontal center (0-320)
-            int posY = block.y;          // Vertical center (0-240)
-            int tagWidth = block.width;  // Width of the bounding box
-            int tagHeight = block.height;// Height of the bounding box
-            int originalTagId = getOriginalTagId(tagId); // my code
-            TargetState side = getTagSide(originalTagId);
+        return finalData; //data is returned in order: turret (theta?) angle in radians, hood angle in radians, expected velocity of flywheel.
+    }
+    public boolean[] cameraData(){
+        boolean[] finalData = {false,false};//data is as follows: sideUp, sideDown
+        //set booleans to data
+        TargetState side=getSideUpClass();
+        if (side == TargetState.sideUp){
+            finalData[0]= true;
+            finalData[1]= false;
 
-            telemetry.addData("HuskyLens ID", tagId);
-            telemetry.addData("Original AprilTag", originalTagId);
-            telemetry.addData("Tag Side", side);
-            if (side ==  TargetState.){
-                leftUp +=1;
-            } else if (side == TargetState.RIGHT_UP) {
-                rightUp+=1;
-            }
+        } else if (side==TargetState.sideDown) {
+            finalData[1]=true;
+            finalData[0]= false;
 
-            // Use these variables in your logic (e.g., driving or centering)
-            telemetry.addLine("--- Tag Data ---");
-            telemetry.addData("ID", tagId);
-            telemetry.addData("Center Pos", "X:%d, Y:%d", posX, posY);
-            telemetry.addData("Dimensions", "%dw x %dh", tagWidth, tagHeight);
         }
-        if (leftUp >0 && rightUp >0){
-            telemetry.addLine("BOTH SIDES SEEN!");
-        }
+        return finalData;
 
-       */
     }
 
 
