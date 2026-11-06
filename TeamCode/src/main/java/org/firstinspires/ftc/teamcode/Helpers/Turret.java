@@ -181,7 +181,50 @@ public class Turret {
 
     }
 
+    public double[] aimCamera(boolean redAlliance){
+        boolean alliance=redAlliance;
+        double[] finalData={0.0,0.0};//left/right, up/down
+        double[] leftData={0.0,0.0}, rightData={0.0,0.0};
 
+        TagReport r=getTags();
+
+
+          HuskyLens.Block[] blocks = huskyLens.blocks();
+
+        // Use .length for arrays instead of .size()
+        telemetry.addData("Total Blocks Found", blocks.length);
+
+        for (HuskyLens.Block block : blocks) {
+            // --- VERSION WITH SPECIFIC VARIABLES ---
+            int tagId = block.id;        // The ID assigned by HuskyLens
+            int posX = block.x;          // Horizontal center (0-320)
+            int posY = block.y;          // Vertical center (0-240)
+            int tagWidth = block.width;  // Width of the bounding box
+            int tagHeight = block.height;// Height of the bounding box
+            int originalTagId = getOriginalTagId(tagId); // my code
+
+            telemetry.addData("HuskyLens ID", tagId);
+            telemetry.addData("Original AprilTag", originalTagId);
+
+
+            // Use these variables in your logic (e.g., driving or centering)
+            telemetry.addLine("--- Tag Data ---");
+            telemetry.addData("ID", tagId);
+            telemetry.addData("Center Pos", "X:%d, Y:%d", posX, posY);
+            telemetry.addData("Dimensions", "%dw x %dh", tagWidth, tagHeight);
+            if ((redAlliance && (tagId==2||tagId==6))||(!redAlliance && (tagId==10||tagId==14))){
+                leftData[0]=(double) posX-160;
+                leftData[1]=(double) posY-120;
+            }else if ((redAlliance && (tagId==3||tagId==7))||(!redAlliance && (tagId==11||tagId==15))){
+                rightData[0]=(double) posX-160;
+                rightData[1]=(double) posY-120;
+            }
+
+        }
+
+
+
+    }
     public boolean shoot() {
 
         // Shooting sequence here
