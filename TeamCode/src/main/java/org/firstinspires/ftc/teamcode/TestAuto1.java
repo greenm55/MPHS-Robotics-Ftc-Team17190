@@ -30,7 +30,7 @@ public class TestAuto1 extends LinearOpMode{
             backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
             backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
-            RobotDrive roboD = new RobotDrive(telemetry, hardwareMap, targetList);
+            RobotDrive roboD = new RobotDrive(hardwareMap, targetList);
 
             waitForStart();
             while (opModeIsActive()){
