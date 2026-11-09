@@ -2,15 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Helpers.Odometry;
-import org.firstinspires.ftc.teamcode.Helpers.PID;
+import org.firstinspires.ftc.teamcode.Helpers.Drive_PID;
 
 @Autonomous(name = "Test PID Remove Later")
-@Disabled
 public class TestPIDRemoveLater extends LinearOpMode {
 
     @Override
@@ -27,7 +25,7 @@ public class TestPIDRemoveLater extends LinearOpMode {
         // target == 0,0,0
         // eg hold
         Odometry odo = new Odometry(hardwareMap);
-        PID pid = new PID();
+        Drive_PID drivePid = new Drive_PID();
 
         double[] target = {0,0,0};
         double[] roboPos;
@@ -40,11 +38,12 @@ public class TestPIDRemoveLater extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
-        pid.resetTime();
+        drivePid.resetTime();
+
         while(opModeIsActive()){
 
             roboPos = odo.evalPos();
-            motorPower = pid.updateRobot(roboPos, target);
+            motorPower = drivePid.updateRobot(roboPos, target);
 
             frontRightDrive.setPower(motorPower[0]);
             frontLeftDrive.setPower(motorPower[1]);
@@ -60,9 +59,9 @@ public class TestPIDRemoveLater extends LinearOpMode {
             telemetry.addData("motor power BR:", motorPower[2]);
             telemetry.addData("motor power BL:", motorPower[3]);
 
-            telemetry.addData("DX:",pid.dTerm[0]);
-            telemetry.addData("DY:",pid.dTerm[1]);
-            telemetry.addData("DT:",pid.dTerm[2]);
+            telemetry.addData("DX:", drivePid.dTerm[0]);
+            telemetry.addData("DY:", drivePid.dTerm[1]);
+            telemetry.addData("DT:", drivePid.dTerm[2]);
 
             telemetry.update();
         }

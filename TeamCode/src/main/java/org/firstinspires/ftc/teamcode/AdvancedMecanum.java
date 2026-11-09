@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.Helpers.Intake;
 import org.firstinspires.ftc.teamcode.Helpers.Odometry;
-import org.firstinspires.ftc.teamcode.Helpers.Turret;
 
 @TeleOp(name = "Advanced Mecanum TeleOp")
 public class AdvancedMecanum extends LinearOpMode {
@@ -18,21 +18,15 @@ public class AdvancedMecanum extends LinearOpMode {
         DcMotor backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
 
         Odometry odometry = new Odometry(hardwareMap);
+        Intake in = new Intake(hardwareMap);
+       // Turret turret = new Turret(this.telemetry, hardwareMap);
 
-        Turret turret = new Turret(this.telemetry, hardwareMap);
-
-        float[] wheelPower = {0,0,0,0}; // 0:FR, 1:FL, 2:BR, 3:BL
-        float[] leftXY;
-        float[] rightXY;
+        double[] wheelPower = {0,0,0,0}; // 0:FR, 1:FL, 2:BR, 3:BL
+        double[] leftXY;
+        double[] rightXY;
 
         double heading;
         double[] position;
-
-        int fr = frontRightDrive.getCurrentPosition();   // right pod
-        int fl = frontLeftDrive.getCurrentPosition();    // left pod
-        int br = backRightDrive.getCurrentPosition();    // perpendicular pod
-
-        double distPerTick = (Math.PI * Odometry.wheelDiameter) / Odometry.tickPerRev;
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -56,41 +50,44 @@ public class AdvancedMecanum extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+
             odometry.evalPos();
-            heading = Odometry.getHeading();
+            heading = odometry.getHeading();
+
             // Note: Pushing up is -1
-            leftXY = new float[]{-gamepad1.left_stick_y, gamepad1.left_stick_x};
-            rightXY = new float[]{-gamepad1.right_stick_y, gamepad1.right_stick_x};
+            leftXY = new double[]{-gamepad1.left_stick_y, -gamepad1.left_stick_x};
+            rightXY = new double[]{-gamepad1.right_stick_y, gamepad1.right_stick_x};
 
-            float fieldX = (float) (leftXY[1] * Math.cos(heading) - leftXY[0] * Math.sin(heading));
-            float fieldY = (float) (leftXY[1] * Math.sin(heading) + leftXY[0] * Math.cos(heading));
+            double Xp = leftXY[0] * Math.cos(heading) + leftXY[1] * Math.sin(heading);
+            double Yp = leftXY[1] * Math.cos(heading) - leftXY[0] * Math.sin(heading);
 
-            wheelPower[0] = fieldY - fieldX - rightXY[1]; // Left y - Left x - Right x
-            wheelPower[1] = fieldY + fieldX + rightXY[1]; // Left y + Left x + Right x
-            wheelPower[2] = fieldY + fieldX - rightXY[1]; // Left y + Left x - Right x
-            wheelPower[3] = fieldY - fieldX + rightXY[1]; // Left y - Left x + Right x
+            wheelPower[0] = Yp - Xp - rightXY[1];
+            wheelPower[1] = Yp + Xp + rightXY[1];
+            wheelPower[2] = Yp + Xp - rightXY[1];
+            wheelPower[3] = Yp - Xp + rightXY[1];
+            // 0:FR, 1:FL, 2:BR, 3:BL
+
+            double intakePower = gamepad1.right_trigger-gamepad1.left_trigger;
+
+            in.runIntake(intakePower);
 
             frontRightDrive.setPower(wheelPower[0]);
             frontLeftDrive.setPower(wheelPower[1]);
             backRightDrive.setPower(wheelPower[2]);
             backLeftDrive.setPower(wheelPower[3]);
 
-            position = Odometry.getRobotPosition();
+            position = odometry.getRobotPosition();
 
-            turret.autoAim();
+            // turret.autoAim();
 
-            if(gamepad1.right_trigger_pressed){
+            /*if(gamepad1.right_trigger_pressed){
                 while(!turret.shoot()){
                     odometry.evalPos();
                     position = Odometry.getRobotPosition();
                     turret.autoAim();
                 }
-            }
-
-            double rightMm = fr * distPerTick;
-            double leftMm = -fl * distPerTick;
-            double perpMm = br * distPerTick;
-            double checkHeading = Odometry.getHeading();
+            }*/
+            double checkHeading = odometry.getHeading();
 
             telemetry.addLine("--- Odometry output ---");
             telemetry.addData("X (mm)", "%.1f", position[0]);
@@ -101,13 +98,6 @@ public class AdvancedMecanum extends LinearOpMode {
             telemetry.addData("Fr (right pod)", frontRightDrive.getCurrentPosition());
             telemetry.addData("Fl (left pod)", frontLeftDrive.getCurrentPosition());
             telemetry.addData("Br (perp pod)", backRightDrive.getCurrentPosition());
-
-            telemetry.addLine("--- Distance since zero (mm) ---");
-            telemetry.addData("Right", "%.1f", rightMm);
-            telemetry.addData("Left", "%.1f", leftMm);
-            telemetry.addData("Perp", "%.1f", perpMm);
-            telemetry.addData("R - L (positive = turning CCW)", "%.1f", rightMm - leftMm);
-            telemetry.addData("(R + L) / 2 (forward)", "%.1f", (rightMm + leftMm) / 2.0);
 
             telemetry.addLine("--- Sanity check ---");
             telemetry.addData("Heading from raw ticks (deg)", "%.2f", Math.toDegrees(checkHeading));

@@ -11,8 +11,20 @@ import org.firstinspires.ftc.teamcode.Helpers.RobotDrive;
 public class AutoMain extends LinearOpMode {
     double[][][] targetList = {
             { // rout #1
-                    {0,0,0,0,0},
-                    {0,0,0,0,0},
+                    {205,1425,0,.8,0},
+                    {1257,74,0,.9,0},
+                    {95,963,(Math.PI/2),.9,0},
+                    {321,2679,Math.PI,.8,0},
+                    {961,3025,Math.PI,.8,0},
+                    {915,3300,Math.PI,.9,0},
+                    {979,3107,Math.PI,.8,0},
+                    {979,3107,0,.8,0},
+                    {651,3085,0,.9,0}, //
+                    {979,3107,0,.8,0},
+                    {979,3107,Math.PI,.8,0},
+                    {915,3300,Math.PI,.9,0},
+                    {979,3107,Math.PI,.8,0},
+                    {-179,2640,0,.9,0}
             },
             { //rout #2
                     {0,0,0,0,0},
@@ -20,7 +32,7 @@ public class AutoMain extends LinearOpMode {
             }
     };
     double[][] startPos = {
-            {0,0,0}
+            {0,1271,0}
     };
     /*
     Basic 1&2 flower: 0,1
@@ -33,6 +45,7 @@ public class AutoMain extends LinearOpMode {
     int routNumber = 0;
     int initStage = 0;
     long waitTime = 0;
+
     @Override
     public void runOpMode(){
 
@@ -46,7 +59,7 @@ public class AutoMain extends LinearOpMode {
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        while(opModeInInit() && initStage != 2){
+        /* while(opModeInInit() && initStage != 2){
             telemetry.addData(" Basic 1&2 flower: 0,1\n" +
                     "    Solo 1&2 flower: 2,3\n" +
                     "    Duo 1&2 flower start: 4,5\n" +
@@ -96,7 +109,9 @@ public class AutoMain extends LinearOpMode {
             }
         }
 
-        RobotDrive roboD = new RobotDrive(hardwareMap, targetList[routNumber], startPos[routNumber]);
+         */
+
+        RobotDrive roboD = new RobotDrive(hardwareMap, targetList[0], startPos[0]);
 
         waitForStart();
         sleep(waitTime);
@@ -109,15 +124,6 @@ public class AutoMain extends LinearOpMode {
             backLeftDrive.setPower(motorPower[3]);
 
         }
-
-    }
-    public int wrap(int num){
-        if(num > 8){
-            num = 0;
-        } else if (num < 0){
-            num = 8;
-        }
-        return num;
 
     }
 

@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.Helpers;
-public class PID {
+public class Drive_PID {
 
     double kP, kI, kD, kPT, kDT, kIT;  // P I and D terms
 
@@ -15,7 +15,7 @@ public class PID {
     double maxIT = 0.1;
 
 
-    public PID(double P, double I, double D, double PT, double IT, double DT) {
+    public Drive_PID(double P, double I, double D, double PT, double IT, double DT) {
         // set gains
         this.kP = P;
         this.kI = I;
@@ -25,7 +25,7 @@ public class PID {
         this.kDT = DT;
 
     }
-    public PID(){
+    public Drive_PID(){
         this.kP = 0.005;
         this.kI = 0.0075;
         this.kD = 0.002;

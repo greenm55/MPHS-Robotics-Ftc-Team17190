@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import org.firstinspires.ftc.teamcode.Helpers.Intake;
 
 @TeleOp(name = "Basic Mecanum TeleOp")
 public class BasicMecanum extends LinearOpMode {
@@ -13,6 +14,7 @@ public class BasicMecanum extends LinearOpMode {
         DcMotor frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
         DcMotor backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
         DcMotor backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
+        DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
 
         double[] wheelPower = {0,0,0,0}; // 0:FR, 1:FL, 2:BR, 3:BL
         double[] leftXY;
@@ -25,11 +27,14 @@ public class BasicMecanum extends LinearOpMode {
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
+        Intake in = new Intake(hardwareMap);
+
         waitForStart();
 
         while (opModeIsActive()) {
             // Note: Pushing up is -1
-            leftXY = new double[]{-gamepad1.left_stick_y, gamepad1.left_stick_x};
+            leftXY = new double[]{-gamepad1.left_stick_y, -gamepad1.left_stick_x};
             rightXY = new double[]{-gamepad1.right_stick_y, gamepad1.right_stick_x};
 
             wheelPower[0] = leftXY[0] + leftXY[1] - rightXY[1]; // Left x + Left y - Right x
@@ -37,14 +42,15 @@ public class BasicMecanum extends LinearOpMode {
             wheelPower[2] = leftXY[0] - leftXY[1] - rightXY[1]; // Left x - Left y - Right x
             wheelPower[3] = leftXY[0] + leftXY[1] + rightXY[1]; // Left x + Left y + Right x
 
-            if (gamepad1.dpad_up){
-                wheelPower = new double[]{1,1,1,1};
-            }
+            double intakePower = gamepad1.right_trigger-gamepad1.left_trigger;
+
+            in.runIntake(intakePower);
 
             frontRightDrive.setPower(wheelPower[0]);
             frontLeftDrive.setPower(wheelPower[1]);
             backRightDrive.setPower(wheelPower[2]);
             backLeftDrive.setPower(wheelPower[3]);
+
 
             telemetry.addLine("Controller inputs");
             telemetry.addData("LeftY:", leftXY[0]);

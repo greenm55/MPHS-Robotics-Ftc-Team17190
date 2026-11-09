@@ -17,11 +17,13 @@ public class RobotDrive {
     double[][] targetPoints;
     private boolean stopped = false;
     int targetNum = 0;
-
+    double[] target1Pos = {500,0};
+    double[] target2Pos = {500,1000};
+    double midLine = (target1Pos[1]+target2Pos[1])/2; // Y-axis
     private final Odometry odo;
     private final Intake intake;
-    PID pid = new PID();
-
+    Drive_PID drivePid = new Drive_PID();
+    TurretController tControl;
 
     public RobotDrive(HardwareMap hardwareMap, double[][] tP) {
 
@@ -47,6 +49,7 @@ public class RobotDrive {
 
         this.targetPoints = tP; // targetPoint[target number][X,Y,T, tolerance (0-1), [0-3](nothing, intake while moving, shoot, intake flower)]
         odo = new Odometry(hardwareMap);
+        tControl = new TurretController(hardwareMap);
         intake = new Intake(3,0,hardwareMap);
         odo.reset();
     }
@@ -74,6 +77,7 @@ public class RobotDrive {
 
         this.targetPoints = tP; // targetPoint[target number][X,Y,T, tolerance (0-1), [0-3](nothing, intake while moving, shoot, intake flower)]
         odo = new Odometry(hardwareMap, sP);
+        tControl = new TurretController(hardwareMap);
         intake = new Intake(3,0,hardwareMap);
         odo.reset();
     }
@@ -99,6 +103,15 @@ public class RobotDrive {
         int startNum = targetNum;
 
         while (targetNum < targetPoints.length) {
+
+            if (robotPosition[1] > midLine){ // target 2
+                tControl.trackPoint(target2Pos[0],target2Pos[1],robotPosition[0],robotPosition[1]);
+                tControl.update(robotPosition[2]);
+            } else if (robotPosition[1] < midLine) { // target 1
+                tControl.trackPoint(target1Pos[0],target1Pos[1],robotPosition[0],robotPosition[1]);
+                tControl.update(robotPosition[2]);
+            }
+
             if (!stopped && !atPoint(targetNum)) break;     // haven't reached this point yet
 
             if (targetPoints[targetNum][4] > 1) {           // hold point
@@ -114,10 +127,10 @@ public class RobotDrive {
             }
             targetNum++;
         }
-        if (targetNum != startNum) pid.resetTime();
+        if (targetNum != startNum) drivePid.resetTime();
 
-        if (targetNum >= targetPoints.length) return pid.updateRobot(robotPosition, new double[]{0, 0, 0});
+        if (targetNum >= targetPoints.length) return drivePid.updateRobot(robotPosition, new double[]{0, 0, 0});
 
-        return pid.updateRobot(robotPosition, targetPoints[targetNum]);
+        return drivePid.updateRobot(robotPosition, targetPoints[targetNum]);
     }
 }
