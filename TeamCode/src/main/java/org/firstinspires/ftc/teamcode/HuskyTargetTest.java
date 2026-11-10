@@ -81,7 +81,6 @@ public class HuskyTargetTest extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            huskylens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
             // Setup a variable for each drive wheel to save power level for telemetry
 
 
