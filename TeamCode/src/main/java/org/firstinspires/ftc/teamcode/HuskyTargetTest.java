@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -35,7 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
+import org.firstinspires.ftc.teamcode.Helpers.Turret;
 
 
 /*
@@ -51,13 +51,12 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Linear OpMode", group="Linear OpMode")
+@TeleOp(name="HuskyTargetTest", group="Linear OpMode")
 @Disabled
-public class BasicOpMode_Linear extends LinearOpMode {
+public class HuskyTargetTest extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor turret = null;
     private HuskyLens huskylens;
 
     @Override
@@ -68,8 +67,8 @@ public class BasicOpMode_Linear extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        turret  = hardwareMap.get(DcMotor.class, "turret");
         huskylens = hardwareMap.get(HuskyLens.class,"HuskyLens");
+        Turret turret = new Turret(telemetry,hardwareMap);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -82,16 +81,15 @@ public class BasicOpMode_Linear extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-
+            huskylens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
             // Setup a variable for each drive wheel to save power level for telemetry
 
 
-            // Choose to drive using either Tank Mode, or POV Mode
-            // Comment out the method that's not used.  The default below is POV.
+           boolean[] data= turret.cameraData();
+           telemetry.addData("Tilted up: ", data[0]);
+           telemetry.addData("Side down: ", data[1]);
 
-            // POV Mode uses left stick to go forward, and right stick to turn.
-            // - This uses basic math to combine motions and is easier to drive straight.
-            HuskyLens.Block[] blocks = huskylens.blocks();
+          /*  HuskyLens.Block[] blocks = huskylens.blocks();
 
             // Use .length for arrays instead of .size()
             telemetry.addData("Total Blocks Found", blocks.length);
@@ -112,13 +110,7 @@ public class BasicOpMode_Linear extends LinearOpMode {
                 telemetry.addData("ID", tagId);
                 telemetry.addData("Center Pos", "X:%d, Y:%d", posX, posY);
                 telemetry.addData("Dimensions", "%dw x %dh", tagWidth, tagHeight);
-                if (tagId==3||tagId==5){
-                    if (posX<120){
-                        int error= Math.abs(posX-120);
-                        turret.setPower(0.5);
-                    }
-                }
-            }
+            }*/
 
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
@@ -132,5 +124,6 @@ public class BasicOpMode_Linear extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.update();
         }
+
     }
 }
