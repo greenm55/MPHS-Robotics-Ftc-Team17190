@@ -51,8 +51,7 @@ import org.firstinspires.ftc.teamcode.Helpers.Turret;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="HuskyTargetTest", group="Linear OpMode")
-@Disabled
+@TeleOp(name="HuskyTargetTest")
 public class HuskyTargetTest extends LinearOpMode {
 
     // Declare OpMode members.
@@ -68,7 +67,7 @@ public class HuskyTargetTest extends LinearOpMode {
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
         huskylens = hardwareMap.get(HuskyLens.class,"HuskyLens");
-        Turret turret = new Turret(telemetry,hardwareMap);
+        TurretTest turret = new TurretTest(telemetry,hardwareMap);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -83,10 +82,12 @@ public class HuskyTargetTest extends LinearOpMode {
         while (opModeIsActive()) {
             // Setup a variable for each drive wheel to save power level for telemetry
 
+            boolean data= turret.cameraDataSimple();
 
-           boolean[] data= turret.cameraData();
-           telemetry.addData("Tilted up: ", data[0]);
-           telemetry.addData("Side down: ", data[1]);
+         if (gamepad1.aWasPressed()){
+             data = turret.cameraDataSimple();
+         }
+           telemetry.addData("Side up: ", data);
 
           /*  HuskyLens.Block[] blocks = huskylens.blocks();
 
