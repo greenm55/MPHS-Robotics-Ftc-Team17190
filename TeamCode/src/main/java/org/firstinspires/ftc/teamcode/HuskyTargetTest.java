@@ -77,11 +77,11 @@ public class HuskyTargetTest extends LinearOpMode {
         // Wait for the game to start (driver presses START)
         waitForStart();
         runtime.reset();
+        turret.setHuskyLensObject();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             // Setup a variable for each drive wheel to save power level for telemetry
-
             boolean data= turret.cameraDataSimple();
 
          if (gamepad1.aWasPressed()){

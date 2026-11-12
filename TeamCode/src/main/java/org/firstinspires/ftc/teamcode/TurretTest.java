@@ -62,6 +62,7 @@ public class TurretTest {
         this(telemetry, hardwareMap);
         this.target = targ;
         odo = new Odometry(hardwareMap);
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_CLASSIFICATION);
     }
 
     public void setBlueAlliance(boolean blue) {
@@ -74,7 +75,6 @@ public class TurretTest {
         return -1; // Unknown ID
     }
     private TargetState getSideUpClass(){
-        huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_CLASSIFICATION);
 
         HuskyLens.Block[] blocks = huskyLens.blocks();
         telemetry.addData("Detected Block Count", blocks.length);
@@ -105,7 +105,6 @@ public class TurretTest {
 
     }
     public TagReport getTags() {
-        huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
         boolean red = false, blue = false, tiltA = false, tiltB = false;
 
         for (HuskyLens.Block block : huskyLens.blocks()) {
@@ -179,6 +178,13 @@ public class TurretTest {
 
         }
         return finalData;
+
+    }
+    public void setHuskyLensObject(){
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_CLASSIFICATION);
+    }
+    public void setHuskyLensTags(){
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
 
     }
     public boolean cameraDataSimple(){
