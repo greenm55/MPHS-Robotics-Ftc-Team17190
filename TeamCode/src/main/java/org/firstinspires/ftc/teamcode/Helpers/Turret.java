@@ -25,8 +25,9 @@ public class Turret {
     HuskyLens huskyLens;
     Odometry odo;
     double[] target = null;
-    boolean blueAlliance = false;   // default red
-
+    boolean blueAlliance = false;// default red
+    //DcMotor belt;
+    //DcMotorEx fly;
     public static class TagReport {
         public final boolean red, blue, tiltA, tiltB;
 
@@ -55,12 +56,15 @@ public class Turret {
         odo = new Odometry(hardwareMap);
         // Initialize turret and shooter hardware here
         telemetry.update();
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_CLASSIFICATION);
+
     }
 
     public Turret(Telemetry telemetry, HardwareMap hardwareMap, double[] targ) {
         this(telemetry, hardwareMap);
         this.target = targ;
         odo = new Odometry(hardwareMap);
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_CLASSIFICATION);
     }
 
     public void setBlueAlliance(boolean blue) {
@@ -73,7 +77,6 @@ public class Turret {
         return -1; // Unknown ID
     }
     private TargetState getSideUpClass(){
-        huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_CLASSIFICATION);
 
         HuskyLens.Block[] blocks = huskyLens.blocks();
         telemetry.addData("Detected Block Count", blocks.length);
@@ -104,7 +107,6 @@ public class Turret {
 
     }
     public TagReport getTags() {
-        huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
         boolean red = false, blue = false, tiltA = false, tiltB = false;
 
         for (HuskyLens.Block block : huskyLens.blocks()) {
@@ -180,12 +182,53 @@ public class Turret {
         return finalData;
 
     }
+    public boolean[] cameraDataTags(boolean blueAlliance){//uses apriltags, needs a boolean for blue alliance.
+        boolean[] finalData = {false,false};//data is as follows: sideUp, sideDown
+        TagReport r = getTags();
+        if (blueAlliance&& (r.blue)){
+            finalData[0]=true;
+            finalData[1]=false;
+        } else if (!blueAlliance&&r.red) {
+            finalData[0]=true;
+            finalData[1]=false;
+        } else if (blueAlliance&& r.onlyRed()) {
+            finalData[0]=false;
+            finalData[1]=true;
+        } else if (!blueAlliance&&r.onlyBlue()) {
+            finalData[0]=false;
+            finalData[1]=true;
+        }
+        return finalData;//returned as a boolean list sideUp, sideDown.
+    }
+    public void setHuskyLensObject(){//need to set the huskylens algorithm outside of the loop
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_CLASSIFICATION);
+    }
+    public void setHuskyLensTags(){
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
+
+    }
+    public boolean cameraDataSimple(){// used only for testing currently, but is ready and simple
+        boolean finalData = false;//automatically false for side down
+        //set booleans to data
+        TargetState side=getSideUpClass();
+        if (side == TargetState.sideUp){
+           finalData=true;
+
+        } else if (side== TargetState.sideDown) {
+            finalData= false;
+
+        }
+        telemetry.addData("Side: ",side);
+        return finalData;//boolean is true for sideUp
+
+    }
 
 
     public boolean shoot() {
 
         // Shooting sequence here
-
+        //fly.setVelocity(500);
+        //belt.setPower(1);
         // Return true when the shot is finished
         return true;
     }

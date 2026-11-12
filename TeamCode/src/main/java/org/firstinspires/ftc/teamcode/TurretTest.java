@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Helpers.Odometry;
+import org.firstinspires.ftc.teamcode.Helpers.Turret;
 
 
 public class TurretTest {
@@ -179,6 +180,24 @@ public class TurretTest {
         }
         return finalData;
 
+    }
+    public boolean[] cameraDataTags(boolean blueAlliance){
+        boolean[] finalData = {false,false};//data is as follows: sideUp, sideDown
+        TagReport r = getTags();
+        if (blueAlliance&& (r.blue)){
+            finalData[0]=true;
+            finalData[1]=false;
+        } else if (!blueAlliance&&r.red) {
+            finalData[0]=true;
+            finalData[1]=false;
+        } else if (blueAlliance&& r.onlyRed()) {
+            finalData[0]=false;
+            finalData[1]=true;
+        } else if (!blueAlliance&&r.onlyBlue()) {
+            finalData[0]=false;
+            finalData[1]=true;
+        }
+        return finalData;
     }
     public void setHuskyLensObject(){
         huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_CLASSIFICATION);
