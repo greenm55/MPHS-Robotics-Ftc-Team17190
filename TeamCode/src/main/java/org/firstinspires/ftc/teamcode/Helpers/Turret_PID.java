@@ -44,7 +44,6 @@ public class Turret_PID {
 
     public double updateFlyWheel(double pos, double targetRPM) {
         long now = System.nanoTime();
-        double dt = (now - lastTime) / 1e9;
         lastTime = now;
 
 
