@@ -25,12 +25,31 @@ public class Odometry {
     public static double fieldY = 0;
 
     public static double[] robotPositionF = {0,0,0};
+    public static double[] robotPositionS = {0,0,0};
 
     public Odometry(HardwareMap hardwareMap){
 
         frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
         backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
+
+        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
+    }
+
+    public Odometry(HardwareMap hardwareMap, double[] sPos){
+
+        frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
+        frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
+        backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
+
+        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
+
+        robotPositionS = sPos;
+        robotPositionF = sPos;
     }
 
     public double[] evalPos() {
@@ -89,6 +108,13 @@ public class Odometry {
         prevLeft = curLeft;
         prevPerpendicular = curPerpendicular;
 
+        //Step 9 - Update position with Starting coordinates
+
+        robotPositionF[0] += robotPositionS[0];
+        robotPositionF[1] += robotPositionS[1];
+        robotPositionF[2] += robotPositionS[2];
+
+
         return robotPositionF;
     }
     public void reset() {
@@ -107,19 +133,19 @@ public class Odometry {
         robotPositionF = evalPos();
     }
 
-    public static double getX(){
+    public double getX(){
         return robotPositionF[0];
     }
 
-    public static double getY(){
+    public double getY(){
         return robotPositionF[1];
     }
 
-    public static double getHeading(){
+    public double getHeading(){
         return robotPositionF[2];
     }
 
-    public static double[] getRobotPosition(){
+    public double[] getRobotPosition(){
         return new double[]{getX(), getY(), getHeading()};
     }
 }

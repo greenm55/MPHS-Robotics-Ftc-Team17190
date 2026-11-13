@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,12 +7,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Helpers.Odometry;
 
 @TeleOp(name = "TestOdo")
-@Disabled
 public class TestOdo extends LinearOpMode {
 
     private DcMotor frontLeftDrive;
     private DcMotor frontRightDrive;
     private DcMotor backRightDrive;
+    public static double[] pos;
+    static Odometry odometry;
 
     @Override
     public void runOpMode() {
@@ -22,7 +22,7 @@ public class TestOdo extends LinearOpMode {
         frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
         backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
 
-        Odometry odometry = new Odometry(hardwareMap);
+        odometry = new Odometry(hardwareMap);
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -39,6 +39,7 @@ public class TestOdo extends LinearOpMode {
 
         double distPerTick = (Math.PI * Odometry.wheelDiameter) / Odometry.tickPerRev;
 
+
         while (opModeIsActive()) {
 
             // Press A to zero encoders and odometry without restarting the OpMode
@@ -52,7 +53,7 @@ public class TestOdo extends LinearOpMode {
             int fl = frontLeftDrive.getCurrentPosition();    // left pod
             int br = backRightDrive.getCurrentPosition();    // perpendicular pod
 
-            double[] pos = odometry.evalPos();
+            pos = odometry.evalPos();
 
             fr *= -1;
 
@@ -78,7 +79,7 @@ public class TestOdo extends LinearOpMode {
             telemetry.addLine("--- Odometry output ---");
             telemetry.addData("X (mm)", "%.1f", pos[0]);
             telemetry.addData("Y (mm)", "%.1f", pos[1]);
-            telemetry.addData("Heading (deg)", "%.2f", Math.toDegrees(pos[2]));
+            telemetry.addData("Heading (deg)", "%.2f", pos[2]);
 
             telemetry.addLine("--- Sanity check ---");
             telemetry.addData("Heading from raw ticks (deg)", "%.2f", Math.toDegrees(checkHeading));

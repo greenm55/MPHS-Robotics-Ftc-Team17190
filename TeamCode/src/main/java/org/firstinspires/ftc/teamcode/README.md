@@ -114,7 +114,7 @@ The controller:
 - Converts the resulting translation and rotation commands into four motor powers.
   The constructor accepts the translation PID gains:
 ```java
-PID pid = new PID(kP, kI, kD);
+PID drivePid = new PID(kP, kI, kD);
 ```
 Heading control has separate proportional and derivative gains defined inside the class.
 Main methods:
