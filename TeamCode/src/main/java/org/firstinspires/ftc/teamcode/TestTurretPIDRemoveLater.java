@@ -32,7 +32,7 @@ public class TestTurretPIDRemoveLater extends LinearOpMode {
             double[] robotPos = odo.evalPos();
             double heading = robotPos[2];
 
-            turretController.trackPoint(100,0,robotPos[0],robotPos[1]);
+            turretController.trackPoint(1300,1500,robotPos[0],robotPos[1]); //
             turretController.update(heading);
 
             telemetry.addData("Position", pos);

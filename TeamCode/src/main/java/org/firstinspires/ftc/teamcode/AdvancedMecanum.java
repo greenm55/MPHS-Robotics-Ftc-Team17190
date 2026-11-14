@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Helpers.Flywheel_PID;
 import org.firstinspires.ftc.teamcode.Helpers.Intake;
 import org.firstinspires.ftc.teamcode.Helpers.Odometry;
+import org.firstinspires.ftc.teamcode.Helpers.TurretController;
 
 @TeleOp(name = "Advanced Mecanum TeleOp")
 public class AdvancedMecanum extends LinearOpMode {
@@ -23,11 +23,14 @@ public class AdvancedMecanum extends LinearOpMode {
         Odometry odometry = new Odometry(hardwareMap);
         Intake in = new Intake(hardwareMap);
         Flywheel_PID fly = new Flywheel_PID(flywheel);
+        TurretController turret = new TurretController(hardwareMap);
        // Turret turret = new Turret(this.telemetry, hardwareMap);
 
         double[] wheelPower = {0,0,0,0}; // 0:FR, 1:FL, 2:BR, 3:BL
-        double[] leftXY;
-        double[] rightXY;
+        double[] left1XY;
+        double[] right1XY;
+        double[] left2XY;
+        double[] right2XY;
 
         double heading;
         double[] position;
@@ -35,6 +38,8 @@ public class AdvancedMecanum extends LinearOpMode {
 
         boolean upPrev = false;
         boolean downPrev = false;
+
+        double turretTarget = 0;
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -63,24 +68,33 @@ public class AdvancedMecanum extends LinearOpMode {
             heading = odometry.getHeading();
 
             // Note: Pushing up is -1
-            leftXY = new double[]{-gamepad1.left_stick_y, -gamepad1.left_stick_x};
-            rightXY = new double[]{-gamepad1.right_stick_y, gamepad1.right_stick_x};
+            left1XY = new double[]{-gamepad1.left_stick_y, -gamepad1.left_stick_x};
+            right1XY = new double[]{-gamepad1.right_stick_y, gamepad1.right_stick_x};
 
-            double Xp = leftXY[0] * Math.cos(heading) + leftXY[1] * Math.sin(heading);
-            double Yp = leftXY[1] * Math.cos(heading) - leftXY[0] * Math.sin(heading);
+            left2XY = new double[]{-gamepad2.left_stick_x, -gamepad2.left_stick_y};
+            right2XY = new double[]{gamepad2.right_stick_x, -gamepad2.right_stick_y};
 
-            wheelPower[0] = Yp - Xp - rightXY[1];
-            wheelPower[1] = Yp + Xp + rightXY[1];
-            wheelPower[2] = Yp + Xp - rightXY[1];
-            wheelPower[3] = Yp - Xp + rightXY[1];
+
+            double Xp = left1XY[0] * Math.cos(heading) + left1XY[1] * Math.sin(heading);
+            double Yp = left1XY[1] * Math.cos(heading) - left1XY[0] * Math.sin(heading);
+
+            wheelPower[0] = Yp - Xp - right1XY[1];
+            wheelPower[1] = Yp + Xp + right1XY[1];
+            wheelPower[2] = Yp + Xp - right1XY[1];
+            wheelPower[3] = Yp - Xp + right1XY[1];
             // 0:FR, 1:FL, 2:BR, 3:BL
 
 
             in.loadBall(gamepad2.right_trigger-gamepad2.left_trigger);
-            in.runIntake(gamepad2.right_stick_y);
+            in.runIntake(-left2XY[1]);
 
-            if (gamepad2.dpad_up && !upPrev) targetRPM += 250;
-            if (gamepad2.dpad_down && !downPrev) targetRPM -= 250;
+            turretTarget += right2XY[0] * 0.1;
+
+            turret.setFieldAngle(turretTarget);
+            turret.update(heading);
+
+            if (gamepad2.dpad_up && !upPrev) targetRPM += 50;
+            if (gamepad2.dpad_down && !downPrev) targetRPM -= 50;
             upPrev = gamepad2.dpad_up;
             downPrev = gamepad2.dpad_down;
 
@@ -111,6 +125,7 @@ public class AdvancedMecanum extends LinearOpMode {
             telemetry.addData("RPM", fly.getRpm());
             telemetry.addData("Target RPM", targetRPM);
             telemetry.addData("Error", targetRPM - fly.getRpm());
+            telemetry.addData("target:", turretTarget);
 
             telemetry.update();
         }
