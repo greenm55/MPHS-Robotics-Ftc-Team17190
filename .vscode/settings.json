@@ -1,0 +1,6 @@
+{
+    "java.import.gradle.enabled": false,
+    "java.import.maven.enabled": false,
+    "java.jdt.ls.androidSupport.enabled": "off",
+    "java.gradle.buildServer.enabled": "off"
+}

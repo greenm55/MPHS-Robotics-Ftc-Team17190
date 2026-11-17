@@ -17,8 +17,8 @@ public class RobotDrive {
     double[][] targetPoints;
     private boolean stopped = false;
     int targetNum = 0;
-    double[] target1Pos = {500,0};
-    double[] target2Pos = {500,1000};
+    double[] target1Pos = {1500,1300};
+    double[] target2Pos = {1500,3100};
     double midLine = (target1Pos[1]+target2Pos[1])/2; // Y-axis
     private final Odometry odo;
     private final Intake intake;
@@ -104,6 +104,7 @@ public class RobotDrive {
 
         while (targetNum < targetPoints.length) {
 
+
             if (robotPosition[1] > midLine){ // target 2
                 tControl.trackPoint(target2Pos[0],target2Pos[1],robotPosition[0],robotPosition[1]);
                 tControl.update(robotPosition[2]);
@@ -132,5 +133,9 @@ public class RobotDrive {
         if (targetNum >= targetPoints.length) return drivePid.updateRobot(robotPosition, new double[]{0, 0, 0});
 
         return drivePid.updateRobot(robotPosition, targetPoints[targetNum]);
+    }
+
+    public double[] getRobotPosition(){
+        return odo.evalPos();
     }
 }

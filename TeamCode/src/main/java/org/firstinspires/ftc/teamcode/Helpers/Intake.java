@@ -19,7 +19,7 @@ public class Intake {
 
     public Intake(int max, int count, HardwareMap hardwareMap) {
         intake = hardwareMap.get(DcMotor.class, "intake");
-        loader = hardwareMap.get(CRServo.class, "loader");
+        loader = hardwareMap.get(CRServo.class, "loaderServo");
         loader.setDirection(REVERSE);
         this.ballMax = max;
         this.ballCount = count;

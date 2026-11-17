@@ -33,8 +33,9 @@ public class AdvancedMecanum extends LinearOpMode {
         double[] right2XY;
 
         double heading;
+        double headingAdjustment = 0;
         double[] position;
-        int targetRPM = 1000;
+        int targetRPM = 3500;
 
         boolean upPrev = false;
         boolean downPrev = false;
@@ -90,7 +91,11 @@ public class AdvancedMecanum extends LinearOpMode {
 
             turretTarget += right2XY[0] * 0.1;
 
-            turret.setFieldAngle(turretTarget);
+            if (gamepad2.xWasPressed()){
+                headingAdjustment = heading;
+            }
+
+            turret.setFieldAngle(turretTarget + headingAdjustment);
             turret.update(heading);
 
             if (gamepad2.dpad_up && !upPrev) targetRPM += 50;
